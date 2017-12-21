@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2003
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafePress.Api", "CafePress.Api\CafePress.Api.csproj", "{72FF63C8-E993-438D-9BA2-D77EEED4E7F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafePress.Api.Tests", "CafePress.Api.Tests\CafePress.Api.Tests.csproj", "{69705AA1-D771-4318-A88F-1DE04E990B62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmBarcodes.Common", "FilmBarcodes.Common\FilmBarcodes.Common.csproj", "{534B5742-95CC-4ADE-B59B-A782DED5E271}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmBarcodes.Common.Tests", "FilmBarcodes.Common.Tests\FilmBarcodes.Common.Tests.csproj", "{607CE236-43AF-41AD-AB39-63A92BBCB10B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmBarcodes.Admin.Web", "FilmBarcodes.Admin.Web\FilmBarcodes.Admin.Web.csproj", "{94DBF3CE-BF4B-42B7-B996-F2E6CFE42188}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarcodeManager", "BarcodeManager\BarcodeManager.csproj", "{BCA5B3C2-190B-49E0-9867-70FB20F93FA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{72FF63C8-E993-438D-9BA2-D77EEED4E7F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72FF63C8-E993-438D-9BA2-D77EEED4E7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72FF63C8-E993-438D-9BA2-D77EEED4E7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72FF63C8-E993-438D-9BA2-D77EEED4E7F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69705AA1-D771-4318-A88F-1DE04E990B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69705AA1-D771-4318-A88F-1DE04E990B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69705AA1-D771-4318-A88F-1DE04E990B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69705AA1-D771-4318-A88F-1DE04E990B62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{534B5742-95CC-4ADE-B59B-A782DED5E271}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{534B5742-95CC-4ADE-B59B-A782DED5E271}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{534B5742-95CC-4ADE-B59B-A782DED5E271}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{534B5742-95CC-4ADE-B59B-A782DED5E271}.Release|Any CPU.Build.0 = Release|Any CPU
+		{607CE236-43AF-41AD-AB39-63A92BBCB10B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{607CE236-43AF-41AD-AB39-63A92BBCB10B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{607CE236-43AF-41AD-AB39-63A92BBCB10B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{607CE236-43AF-41AD-AB39-63A92BBCB10B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94DBF3CE-BF4B-42B7-B996-F2E6CFE42188}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DBF3CE-BF4B-42B7-B996-F2E6CFE42188}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94DBF3CE-BF4B-42B7-B996-F2E6CFE42188}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94DBF3CE-BF4B-42B7-B996-F2E6CFE42188}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCA5B3C2-190B-49E0-9867-70FB20F93FA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCA5B3C2-190B-49E0-9867-70FB20F93FA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCA5B3C2-190B-49E0-9867-70FB20F93FA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCA5B3C2-190B-49E0-9867-70FB20F93FA5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3ED02D30-3084-48F4-B973-7F2636C81C2F}
+	EndGlobalSection
+EndGlobal

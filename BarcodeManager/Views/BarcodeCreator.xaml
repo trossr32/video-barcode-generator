@@ -1,0 +1,167 @@
+﻿<UserControl x:Class="BarcodeManager.BarcodeCreator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BarcodeManager"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+             xmlns:ViewModels="clr-namespace:BarcodeManager.ViewModels"
+             mc:Ignorable="d" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+             d:DataContext="{d:DesignInstance ViewModels:BarcodeCreatorViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <materialDesign:Card Grid.Row="0" Margin="5,5,5,5" Padding="0,10,0,10" Width="Auto" VerticalAlignment="Top" x:Name="DragPanel" 
+                             dragDrop:DragDrop.IsDropTarget="True" dragDrop:DragDrop.DropHandler="{Binding}" AllowDrop="True" 
+                             Background="{DynamicResource PrimaryHueDarkBrush}" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}">
+            <Grid Margin="10,0,10,0" Width="Auto">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0" Margin="10,0,10,0" Style="{StaticResource MaterialDesignBody2TextBlock}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                           Text="{Binding VideoFile.FileName}" />
+                <Button Grid.Column="1" Width="24" Height="24" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" materialDesign:RippleAssist.IsCentered="True" 
+                        Style="{StaticResource MaterialDesignFloatingActionAccentButton}" Command="{Binding ImportFileCommand}">
+                    <materialDesign:PackIcon Kind="Plus" />
+                </Button>
+            </Grid>
+        </materialDesign:Card>
+
+        <materialDesign:Card Grid.Row="1" Margin="5,5,5,5" Padding="0,10,0,10" Width="Auto" VerticalAlignment="Top" Visibility="{Binding VisibleIfVideoFileValid}"
+                             Background="{DynamicResource PrimaryHueDarkBrush}" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="10,0,10,0" Width="Auto">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="10,0,10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}">Location:</TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoFile.FilePath}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}">Duration:</TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoFile.DurationText}" />
+                    </Grid>
+                </Grid>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="10,20,10,0" Width="Auto" HorizontalAlignment="Right">
+                    <Button Margin="10,0,0,0" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" Command="{Binding PlayVideoCommand}" ToolTip="Play video" Height="25" Width="25">
+                        <materialDesign:PackIcon Width="18" Height="18" Kind="Play" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <materialDesign:Card Grid.Row="2" Margin="5,5,5,5" Padding="0,10,0,10" VerticalAlignment="Top" x:Name="ProcessPanel" Visibility="{Binding VisibleIfVideoFileValid}"
+                             Background="{DynamicResource PrimaryHueDarkBrush}" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}">
+            <Grid Margin="10,0,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <!--<ColumnDefinition Width="Auto" />-->
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
+                    <ToggleButton VerticalAlignment="Center" IsChecked="{Binding VideoFile.CreateWebPage}" 
+                                  Margin="10,0,10,0" Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" ToolTip="MaterialDesignSwitchAccentToggleButton" />
+                    <Label>Create web page</Label>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,5">
+                    <TextBox materialDesign:HintAssist.Hint="Height" MinWidth="40" TextAlignment="Right" Text="{Binding VideoFile.OutputHeight}" />
+                    <Label VerticalAlignment="Bottom">px</Label>
+                    <Label>Barcode height</Label>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,5">
+                    <TextBox materialDesign:HintAssist.Hint="Width" MinWidth="40" TextAlignment="Right" Text="{Binding VideoFile.OutputWidth}" />
+                    <Label VerticalAlignment="Bottom">px</Label>
+                    <Label>Barcode width</Label>
+                    <Button Command="{Binding SetWidthToDurationCommand}"  Content="Set to video duration" Margin="30,0,0,0"
+                            Style="{StaticResource MaterialDesignFlatButton}" Foreground="{DynamicResource SecondaryAccentBrush}"></Button>
+                    <Button Command="{Binding SetWidthToCanvasRatioCommand}" Content="Set to canvas ratio (1:7)" Margin="30,0,0,0"
+                            Style="{StaticResource MaterialDesignFlatButton}" Foreground="{DynamicResource SecondaryAccentBrush}"></Button>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <materialDesign:Card Grid.Row="3" Margin="5,5,5,5" Padding="0,10,0,10" Width="Auto" VerticalAlignment="Top" Height="Auto" Visibility="{Binding VisibleIfVideoFileValid}"
+                             Background="{DynamicResource PrimaryHueDarkBrush}" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}">
+            <Grid Margin="10,0,10,0" Width="Auto">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <TextBox Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Output directory for all videos" MinWidth="200" Text="{Binding Settings.BarcodeManager.OutputDirectory}" />
+                    <Button Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" Padding="0" Command="{Binding ChooseSettingsOutputDirectoryCommand}" ToolTip="Choose directory" 
+                            Height="25" Width="25"> 
+                        <materialDesign:PackIcon Width="18" Height="18" Kind="Folder" Foreground="{DynamicResource SecondaryAccentBrush}" />
+                    </Button>
+                    <Label Grid.Row="0" Grid.Column="2">Output directory for all videos</Label>
+
+                    <TextBox Grid.Row="1" Grid.Column="0" materialDesign:HintAssist.Hint="Output directory for this video" MinWidth="200" Text="{Binding VideoFile.OutputDirectory}" />
+                    <Label Grid.Row="1" Grid.Column="2">Output directory for this video</Label>
+                </Grid>
+
+                <Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" materialDesign:RippleAssist.IsCentered="True" Command="{Binding CreateBarcodeCommand}"
+                        Style="{StaticResource MaterialDesignRaisedAccentButton}" Content="Create Barcode">
+                </Button>
+            </Grid>
+        </materialDesign:Card>
+    </Grid>
+</UserControl>
