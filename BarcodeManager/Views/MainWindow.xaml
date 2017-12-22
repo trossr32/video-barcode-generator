@@ -14,7 +14,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="900">
-    <Grid x:Name="MainContent">
+    <Grid>
         <Grid.ColumnDefinitions>
             <!--<ColumnDefinition Width="2*" />-->
             <ColumnDefinition Width="*" />
@@ -74,7 +74,7 @@
             <MenuItem Header="Create" Click="MenuCreate_Click"  />
         </Menu>
 
-        <DockPanel Grid.Row="1">
+        <DockPanel Grid.Row="1" LastChildFill="True">
             <ContentControl x:Name="ContentArea" />
         </DockPanel>
     </Grid>

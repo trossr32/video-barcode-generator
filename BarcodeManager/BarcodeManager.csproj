@@ -115,6 +115,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\Minus10Converter.cs" />
     <Compile Include="Models\BarcodeCreatorModel.cs" />
     <Compile Include="ViewModels\BarcodeCreatorViewModel.cs" />
     <Compile Include="ViewModels\DelegateCommand.cs" />
