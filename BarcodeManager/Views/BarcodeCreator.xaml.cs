@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using BarcodeManager.ViewModels;
 
 namespace BarcodeManager
 {
@@ -7,11 +8,11 @@ namespace BarcodeManager
     /// </summary>
     public partial class BarcodeCreator : UserControl
     {
-        public BarcodeCreator()
+        public BarcodeCreator(MainWindow mainWindow, TasksViewModel tasksViewModel)
         {
             InitializeComponent();
 
-            DataContext = new ViewModels.BarcodeCreatorViewModel();
+            DataContext = new BarcodeCreatorViewModel(mainWindow, tasksViewModel);
         }
     }
 }

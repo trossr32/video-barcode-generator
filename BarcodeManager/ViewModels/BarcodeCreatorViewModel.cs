@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BarcodeManager.Models;
 using FilmBarcodes.Common;
+using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.CafePress;
 using GongSolutions.Wpf.DragDrop;
@@ -18,6 +21,8 @@ namespace BarcodeManager.ViewModels
     {
         private readonly List<string> _acceptedVideoFiles = new List<string> { "avi", "divx", "m4v", "mkv", "m2ts", "mp4", "mpg", "wmv" };
         private readonly BarcodeCreatorModel _model = new BarcodeCreatorModel();
+        private TasksViewModel _tasksViewModel;
+        private MainWindow _mainWindow;
 
         private SettingsWrapper _settings;
         private VideoFile _videoFile;
@@ -64,9 +69,13 @@ namespace BarcodeManager.ViewModels
         public ICommand CreateBarcodeCommand => new DelegateCommand(CreateBarcode);
         public ICommand ChooseSettingsOutputDirectoryCommand => new DelegateCommand(ChooseSettingsOutputDirectory);
 
-        public BarcodeCreatorViewModel()
+        public BarcodeCreatorViewModel(MainWindow mainWindow, TasksViewModel tasksViewModel)
         {
             Settings = FilmBarcodes.Common.Settings.GetSettings();
+
+            _mainWindow = mainWindow;
+
+            _tasksViewModel = tasksViewModel;
         }
 
         private void ImportFile()
@@ -130,7 +139,7 @@ namespace BarcodeManager.ViewModels
 
         private void CreateBarcode()
         {
-            // check if the settings directory has changed (been manaually typed)
+            // check if the settings directory has changed (been manually typed)
             if (!Directory.Exists(Settings.BarcodeManager.OutputDirectory))
             {
                 var tempSettings = FilmBarcodes.Common.Settings.GetSettings();
@@ -141,25 +150,9 @@ namespace BarcodeManager.ViewModels
 
             VideoFile.FullOutputDirectory = Path.Combine(Settings.BarcodeManager.OutputDirectory, VideoFile.OutputDirectory);
 
-            // check if the video output directory exists, otherwise create
-            if (!Directory.Exists(VideoFile.FullOutputDirectory))
-            {
-                try
-                {
-                    Directory.CreateDirectory(VideoFile.FullOutputDirectory);
-                }
-                catch (Exception e)
-                {
-                    var l = "Unable to create output directory";
-                    throw;
-                }
-            }
+            _tasksViewModel.AddTask(VideoFile);
 
-            VideoFile = VideoProcessor.BuildColourList(VideoFile);
-
-            ImageProcessor.RenderImage(VideoFile);
-
-            VideoFile.Write();
+            _mainWindow.SetTab(TabType.Tasks);
         }
         
         private void ChooseSettingsOutputDirectory()

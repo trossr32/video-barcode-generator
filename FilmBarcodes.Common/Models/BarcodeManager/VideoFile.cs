@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FilmBarcodes.Common.Enums;
 using Newtonsoft.Json;
 using NReco.VideoInfo;
 
@@ -70,6 +71,13 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
         public void Write()
         {
             File.WriteAllText(Path.Combine(FullOutputDirectory, "videofile.json"), JsonConvert.SerializeObject(this));
+        }
+
+        public void WriteAsync(IProgress<ProgressWrapper> progress)
+        {
+            File.WriteAllText(Path.Combine(FullOutputDirectory, "videofile.json"), JsonConvert.SerializeObject(this));
+
+            progress.Report(new ProgressWrapper(Duration, Duration, ProcessType.WriteVideoFile));
         }
     }
 

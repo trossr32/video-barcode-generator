@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using FilmBarcodes.Common.Enums;
+using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using ImageMagick;
 
@@ -54,6 +56,32 @@ namespace FilmBarcodes.Common
             }
 
             bmp.Save(Path.Combine(file.FullOutputDirectory, imageFile), ImageFormat.Jpeg);
+        }
+
+        public static void RenderImageAsync(VideoFile file, IProgress<ProgressWrapper> progress)
+        {
+            var imageFile = $"{file.FilenameWithoutExtension}.jpg";
+
+            var bmp = new Bitmap(file.OutputWidth, file.OutputHeight);
+
+            using (Graphics graph = Graphics.FromImage(bmp))
+            {
+                double frame = 0;
+                double frameJump = file.Colours.Count / (double)file.OutputWidth;
+
+                for (var i = 0; i < file.OutputWidth; i++)
+                {
+                    frame = frame + frameJump;
+
+                    Rectangle imageSize = new Rectangle(i, 0, i, file.OutputHeight);
+
+                    graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(file.Colours.First(c => c.Frame == Convert.ToInt32(Math.Round(frame))).Hex)), imageSize);
+                }
+            }
+
+            bmp.Save(Path.Combine(file.FullOutputDirectory, imageFile), ImageFormat.Jpeg);
+
+            progress.Report(new ProgressWrapper(file.Duration, file.Duration, ProcessType.RenderImage));
         }
     }
 }

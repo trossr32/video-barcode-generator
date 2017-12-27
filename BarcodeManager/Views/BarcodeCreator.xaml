@@ -7,9 +7,9 @@
              xmlns:converter="clr-namespace:BarcodeManager.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
-             xmlns:ViewModels="clr-namespace:BarcodeManager.ViewModels"
+             xmlns:viewModels="clr-namespace:BarcodeManager.ViewModels"
              mc:Ignorable="d" Height="Auto"
-             d:DataContext="{d:DesignInstance ViewModels:BarcodeCreatorViewModel}">
+             d:DataContext="{d:DesignInstance viewModels:BarcodeCreatorViewModel}">
     <!--<UserControl.Resources>
         <converter:Minus10Converter x:Key="Conv" />
     </UserControl.Resources>
