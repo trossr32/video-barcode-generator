@@ -13,50 +13,66 @@
         <converters:TimeSpanToStringConverter x:Key="TimeSpanConverter" />
     </UserControl.Resources>
     <Grid>
-        <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding Tasks}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type viewModels:TaskProgressViewModel}">
-                    <Border x:Name="Border" Padding="8" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,0,0,1">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition SharedSizeGroup="Checkerz" />
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+        <materialDesign:Card Grid.Row="0" Margin="5,5,5,5" Width="Auto" VerticalAlignment="Top" materialDesign:ShadowAssist.ShadowDepth="Depth5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-                            <StackPanel Grid.Column="0">
-                                <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Queued" Width="32" Height="32" Visibility="{Binding QueuedVisible}">
-                                    <materialDesign:PackIcon Width="26" Height="26" Kind="Clock" />
-                                </Button>
-                                <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Running" Width="32" Height="32" Visibility="{Binding RunningVisible}">
-                                    <materialDesign:PackIcon Width="26" Height="26" Kind="Play" />
-                                </Button>
-                                <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Success" Width="32" Height="32" Visibility="{Binding SuccessVisible}">
-                                    <materialDesign:PackIcon Width="26" Height="26" Kind="Check" />
-                                </Button>
-                                <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Failure" Width="32" Height="32" Visibility="{Binding FailureVisible}">
-                                    <materialDesign:PackIcon Width="26" Height="26" Kind="Close" />
-                                </Button>
-                            </StackPanel>
+                <materialDesign:ColorZone Grid.Row="0" Margin="0,0,0,30" Padding="16" Mode="PrimaryDark">
+                    <StackPanel  Orientation="Horizontal">
+                        <!--<ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}" />-->
+                        <TextBlock Margin="16,0,0,0" VerticalAlignment="Center">Tasks</TextBlock>
+                    </StackPanel>
+                </materialDesign:ColorZone>
 
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <TextBlock FontWeight="Bold" Text="{Binding VideoFile.FileName}" />
-                                <TextBlock Text="{Binding Elapsed, Converter={StaticResource TimeSpanConverter}}" Margin="0,5,0,0" />
-                            </StackPanel>
+                <ItemsControl Grid.Row="1" Grid.IsSharedSizeScope="True" ItemsSource="{Binding Tasks}" Background="{StaticResource MaterialDesignCardBackground}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModels:TaskProgressViewModel}">
+                            <Border x:Name="Border" Padding="8" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="Checkerz" />
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="2" Margin="20,0,20,0">
-                                <TextBlock Foreground="{StaticResource MaterialDesignDarkForeground}" Text="{Binding Progress.Status}" HorizontalAlignment="Right" />
-                                <ProgressBar Height="15" Margin="0,5,0,0" Value="{Binding Progress.Progress}" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource MaterialDesignSelection}" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                                    <StackPanel Grid.Column="0">
+                                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Queued" Width="32" Height="32" Visibility="{Binding QueuedVisible}">
+                                            <materialDesign:PackIcon Width="26" Height="26" Kind="Clock" />
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Running" Width="32" Height="32" Visibility="{Binding RunningVisible}">
+                                            <materialDesign:PackIcon Width="26" Height="26" Kind="Play" />
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Success" Width="32" Height="32" Visibility="{Binding SuccessVisible}">
+                                            <materialDesign:PackIcon Width="26" Height="26" Kind="Check" />
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Failure" Width="32" Height="32" Visibility="{Binding FailureVisible}">
+                                            <materialDesign:PackIcon Width="26" Height="26" Kind="Close" />
+                                        </Button>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                        <TextBlock FontWeight="Bold" Text="{Binding VideoFile.FileName}" />
+                                        <TextBlock Text="{Binding Elapsed, Converter={StaticResource TimeSpanConverter}}" Margin="0,5,0,0" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Margin="20,0,20,0">
+                                        <TextBlock Foreground="{StaticResource MaterialDesignDarkForeground}" Text="{Binding Progress.Status}" HorizontalAlignment="Right" />
+                                        <ProgressBar Height="15" Margin="0,5,0,0" Value="{Binding Progress.Progress}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource MaterialDesignSelection}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </materialDesign:Card>
     </Grid>
 </UserControl>

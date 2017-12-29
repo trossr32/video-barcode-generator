@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="BarcodeManager.BarcodeCreatorParent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:BarcodeManager.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:TasksViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60*" />
+            <ColumnDefinition Width="40*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Column="0" LastChildFill="True">
+            <ContentControl x:Name="BarcodeCreatorContent" />
+        </DockPanel>
+
+        <DockPanel Grid.Column="1" LastChildFill="True">
+            <ContentControl x:Name="TasksContent" />
+        </DockPanel>
+    </Grid>
+</UserControl>

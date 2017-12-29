@@ -22,7 +22,7 @@ namespace BarcodeManager.ViewModels
         private readonly List<string> _acceptedVideoFiles = new List<string> { "avi", "divx", "m4v", "mkv", "m2ts", "mp4", "mpg", "wmv" };
         private readonly BarcodeCreatorModel _model = new BarcodeCreatorModel();
         private TasksViewModel _tasksViewModel;
-        private MainWindow _mainWindow;
+        //private MainWindow _mainWindow;
 
         private SettingsWrapper _settings;
         private VideoFile _videoFile;
@@ -69,11 +69,11 @@ namespace BarcodeManager.ViewModels
         public ICommand CreateBarcodeCommand => new DelegateCommand(CreateBarcode);
         public ICommand ChooseSettingsOutputDirectoryCommand => new DelegateCommand(ChooseSettingsOutputDirectory);
 
-        public BarcodeCreatorViewModel(MainWindow mainWindow, TasksViewModel tasksViewModel)
+        public BarcodeCreatorViewModel(TasksViewModel tasksViewModel)
         {
             Settings = FilmBarcodes.Common.Settings.GetSettings();
 
-            _mainWindow = mainWindow;
+            //_mainWindow = mainWindow;
 
             _tasksViewModel = tasksViewModel;
         }
@@ -152,7 +152,7 @@ namespace BarcodeManager.ViewModels
 
             _tasksViewModel.AddTask(VideoFile);
 
-            _mainWindow.SetTab(TabType.Tasks);
+            //_mainWindow.SetTab(TabType.Tasks);
         }
         
         private void ChooseSettingsOutputDirectory()

@@ -9,20 +9,18 @@ namespace BarcodeManager
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BarcodeCreator _barcodeCreator;
+        private BarcodeCreatorParent _barcodeCreatorParent;
         private Home _home;
-        private Tasks _tasks;
 
         public MainWindow()
         {
             InitializeComponent();
 
             _home = new Home();
-            _tasks = new Tasks();
 
-            _barcodeCreator = new BarcodeCreator(this, (TasksViewModel) _tasks.DataContext);
+            _barcodeCreatorParent = new BarcodeCreatorParent();
 
-            ContentArea.Content = _barcodeCreator;
+            ContentArea.Content = _barcodeCreatorParent;
         }
         
         private void MenuHome_Click(object sender, RoutedEventArgs e)
@@ -35,10 +33,10 @@ namespace BarcodeManager
             SetTab(TabType.Create);
         }
 
-        private void MenuTasks_Click(object sender, RoutedEventArgs e)
-        {
-            SetTab(TabType.Tasks);
-        }
+        //private void MenuTasks_Click(object sender, RoutedEventArgs e)
+        //{
+        //    SetTab(TabType.Tasks);
+        //}
 
         public void SetTab(TabType tab)
         {
@@ -48,11 +46,11 @@ namespace BarcodeManager
                     ContentArea.Content = _home;
                     break;
                 case TabType.Create:
-                    ContentArea.Content = _barcodeCreator;
+                    ContentArea.Content = _barcodeCreatorParent;
                     break;
-                case TabType.Tasks:
-                    ContentArea.Content = _tasks;
-                    break;
+                //case TabType.Tasks:
+                //    ContentArea.Content = _tasks;
+                //    break;
             }
         }
     }

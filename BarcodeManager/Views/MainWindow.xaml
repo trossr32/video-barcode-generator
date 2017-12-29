@@ -25,8 +25,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
-        <Menu Grid.Row="0" IsMainMenu="True">
+
+        <Menu Grid.Row="0" IsMainMenu="True" Background="{StaticResource PrimaryHueDarkBrush}" materialDesign:ShadowAssist.ShadowDepth="Depth5">
             <MenuItem Header="_File">
                 <MenuItem Header="Save">
                     <MenuItem.Icon>
@@ -73,7 +73,7 @@
             </MenuItem>
             <MenuItem Header="Home" Click="MenuHome_Click"  />
             <MenuItem Header="Create" Click="MenuCreate_Click"  />
-            <MenuItem Header="Tasks" Click="MenuTasks_Click"  />
+            <!--<MenuItem Header="Tasks" Click="MenuTasks_Click"  />-->
         </Menu>
 
         <DockPanel Grid.Row="1" LastChildFill="True">

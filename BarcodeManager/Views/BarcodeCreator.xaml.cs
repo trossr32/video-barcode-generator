@@ -8,11 +8,11 @@ namespace BarcodeManager
     /// </summary>
     public partial class BarcodeCreator : UserControl
     {
-        public BarcodeCreator(MainWindow mainWindow, TasksViewModel tasksViewModel)
+        public BarcodeCreator(TasksViewModel tasksViewModel)
         {
             InitializeComponent();
 
-            DataContext = new BarcodeCreatorViewModel(mainWindow, tasksViewModel);
+            DataContext = new BarcodeCreatorViewModel(tasksViewModel);
         }
     }
 }
