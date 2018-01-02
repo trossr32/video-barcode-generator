@@ -76,6 +76,9 @@
     <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WindowsAPICodePack.1.1.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NReco.VideoInfo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NReco.VideoInfo.1.0.0\lib\NReco.VideoInfo.dll</HintPath>
     </Reference>
@@ -107,6 +110,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\CafePressDesigns.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Tasks.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -126,6 +133,7 @@
     <Compile Include="Converters\TimeSpanToStringConverter.cs" />
     <Compile Include="Converters\Minus10Converter.cs" />
     <Compile Include="Models\BarcodeCreatorModel.cs" />
+    <Compile Include="ViewModels\CafePressDesignsViewModel.cs" />
     <Compile Include="ViewModels\BarcodeCreatorViewModel.cs" />
     <Compile Include="ViewModels\DelegateCommand.cs" />
     <Compile Include="ViewModels\ObservableObject.cs" />
@@ -136,6 +144,9 @@
     </Compile>
     <Compile Include="Views\BarcodeCreatorParent.xaml.cs">
       <DependentUpon>BarcodeCreatorParent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CafePressDesigns.xaml.cs">
+      <DependentUpon>CafePressDesigns.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Tasks.xaml.cs">
       <DependentUpon>Tasks.xaml</DependentUpon>
@@ -179,6 +190,10 @@
     <Resource Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CafePress.Api\CafePress.Api.csproj">
+      <Project>{72ff63c8-e993-438d-9ba2-d77eeed4e7f0}</Project>
+      <Name>CafePress.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FilmBarcodes.Common\FilmBarcodes.Common.csproj">
       <Project>{534b5742-95cc-4ade-b59b-a782ded5e271}</Project>
       <Name>FilmBarcodes.Common</Name>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using FilmBarcodes.Common.Models.CafePress;
+using FilmBarcodes.Common.Models.Settings;
 using Newtonsoft.Json;
 
 namespace FilmBarcodes.Common

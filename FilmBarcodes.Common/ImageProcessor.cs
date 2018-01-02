@@ -34,16 +34,14 @@ namespace FilmBarcodes.Common
             }
         }
 
-        public static void RenderImage(VideoFile file)
+        public static void RenderImage(VideoCollection videoCollection, VideoFile file)
         {
-            var imageFile = $"{file.FilenameWithoutExtension}.jpg";
-            
             var bmp = new Bitmap(file.OutputWidth, file.OutputHeight);
 
             using (Graphics graph = Graphics.FromImage(bmp))
             {
                 double frame = 0;
-                double frameJump = file.Colours.Count / (double)file.OutputWidth;
+                double frameJump = videoCollection.Data.Colours.Count / (double)file.OutputWidth;
 
                 for (var i = 0; i < file.OutputWidth; i++)
                 {
@@ -51,23 +49,26 @@ namespace FilmBarcodes.Common
 
                     Rectangle imageSize = new Rectangle(i, 0, i, file.OutputHeight);
 
-                    graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(file.Colours.First(c => c.Frame == Convert.ToInt32(Math.Round(frame))).Hex)), imageSize);
+                    var copyFrame = Convert.ToInt32(Math.Round(frame));
+
+                    file.Data.Colours.Add(videoCollection.Data.Colours.First(c => c.Frame == copyFrame));
+                    file.Data.Images.Add(videoCollection.Data.Images.First(c => c.Frame == copyFrame));
+
+                    graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(file.Data.Colours.Last().Hex)), imageSize);
                 }
             }
 
-            bmp.Save(Path.Combine(file.FullOutputDirectory, imageFile), ImageFormat.Jpeg);
+            bmp.Save(Path.Combine(videoCollection.Config.FullOutputDirectory, file.OutputFilename), ImageFormat.Jpeg);
         }
 
-        public static void RenderImageAsync(VideoFile file, IProgress<ProgressWrapper> progress)
+        public static void RenderImageAsync(VideoCollection videoCollection, VideoFile file, IProgress<ProgressWrapper> progress)
         {
-            var imageFile = $"{file.FilenameWithoutExtension}.jpg";
-
             var bmp = new Bitmap(file.OutputWidth, file.OutputHeight);
 
             using (Graphics graph = Graphics.FromImage(bmp))
             {
                 double frame = 0;
-                double frameJump = file.Colours.Count / (double)file.OutputWidth;
+                double frameJump = videoCollection.Data.Colours.Count / (double)file.OutputWidth;
 
                 for (var i = 0; i < file.OutputWidth; i++)
                 {
@@ -75,13 +76,18 @@ namespace FilmBarcodes.Common
 
                     Rectangle imageSize = new Rectangle(i, 0, i, file.OutputHeight);
 
-                    graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(file.Colours.First(c => c.Frame == Convert.ToInt32(Math.Round(frame))).Hex)), imageSize);
+                    var copyFrame = Convert.ToInt32(Math.Round(frame));
+
+                    file.Data.Colours.Add(videoCollection.Data.Colours.First(c => c.Frame == copyFrame));
+                    file.Data.Images.Add(videoCollection.Data.Images.First(c => c.Frame == copyFrame));
+
+                    graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(file.Data.Colours.Last().Hex)), imageSize);
                 }
             }
 
-            bmp.Save(Path.Combine(file.FullOutputDirectory, imageFile), ImageFormat.Jpeg);
+            bmp.Save(Path.Combine(videoCollection.Config.FullOutputDirectory, file.OutputFilename), ImageFormat.Jpeg);
 
-            progress.Report(new ProgressWrapper(file.Duration, file.Duration, ProcessType.RenderImage));
+            progress.Report(new ProgressWrapper(videoCollection.Config.Duration, videoCollection.Config.Duration, ProcessType.RenderImage));
         }
     }
 }

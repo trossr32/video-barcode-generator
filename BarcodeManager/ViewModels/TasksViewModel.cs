@@ -48,11 +48,11 @@ namespace BarcodeManager.ViewModels
             };
         }
 
-        public async void AddTask(VideoFile videoFile)
+        public async void AddTask(VideoFile videoFile, VideoCollection videoCollection)
         {
             int taskId = Tasks.Any() ? Tasks.Max(t => t.Id) + 1 : 1;
             
-            Tasks.Add(new TaskProgressViewModel(videoFile, taskId));
+            Tasks.Add(new TaskProgressViewModel(videoFile, videoCollection, taskId));
 
             if (Tasks.Any(t => t.State == State.Running))
                 return;

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using BarcodeManager.ViewModels;
 using FilmBarcodes.Common.Enums;
 
 namespace BarcodeManager
@@ -11,6 +10,7 @@ namespace BarcodeManager
     {
         private BarcodeCreatorParent _barcodeCreatorParent;
         private Home _home;
+        private CafePressDesigns _cafePressDesigns;
 
         public MainWindow()
         {
@@ -19,6 +19,8 @@ namespace BarcodeManager
             _home = new Home();
 
             _barcodeCreatorParent = new BarcodeCreatorParent();
+
+            _cafePressDesigns = new CafePressDesigns();
 
             ContentArea.Content = _barcodeCreatorParent;
         }
@@ -33,12 +35,12 @@ namespace BarcodeManager
             SetTab(TabType.Create);
         }
 
-        //private void MenuTasks_Click(object sender, RoutedEventArgs e)
-        //{
-        //    SetTab(TabType.Tasks);
-        //}
+        private void Designs_Click(object sender, RoutedEventArgs e)
+        {
+            SetTab(TabType.Designs);
+        }
 
-        public void SetTab(TabType tab)
+        private void SetTab(TabType tab)
         {
             switch (tab)
             {
@@ -48,9 +50,9 @@ namespace BarcodeManager
                 case TabType.Create:
                     ContentArea.Content = _barcodeCreatorParent;
                     break;
-                //case TabType.Tasks:
-                //    ContentArea.Content = _tasks;
-                //    break;
+                case TabType.Designs:
+                    ContentArea.Content = _cafePressDesigns;
+                    break;
             }
         }
     }

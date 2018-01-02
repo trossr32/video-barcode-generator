@@ -1,14 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace FilmBarcodes.Common.Models.CafePress
+namespace FilmBarcodes.Common.Models.Settings
 {
     public class SettingsWrapper
     {
-        //private const string ApiUrl = "http://open-api.cafepress.com/";
-        //private const string AppKey = "c3cwruiq405i2or26foviseoyrhivlaxaxbi";
-        //private const string Email = "rob@200sx.org.uk";
-        //private const string Password = "zmszj6OP27cA";
-
         public SettingsWrapper()
         {
             BarcodeManager = new BarcodeManager
@@ -37,12 +33,15 @@ namespace FilmBarcodes.Common.Models.CafePress
     {
         private string _outputDirectory;
 
-        public string OutputDirectory {
+        public string OutputDirectory
+        {
             get => string.IsNullOrEmpty(_outputDirectory)
                 ? Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
                 : _outputDirectory;
             set => _outputDirectory = value;
         }
+
+        public List<string> AcceptedVideoFiles => new List<string> { "avi", "divx", "m4v", "mkv", "m2ts", "mp4", "mpg", "wmv" };
     }
 
     public class CafePress

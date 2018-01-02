@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
@@ -15,54 +14,54 @@ namespace FilmBarcodes.Common
             return new FFProbe().GetMediaInfo(file);
         }
 
-        public static VideoFile BuildColourList(VideoFile file)
+        public static VideoCollection BuildColourList(VideoCollection videoCollection)
         {
-            Directory.CreateDirectory(file.ImageDirectory);
+            Directory.CreateDirectory(videoCollection.Config.ImageDirectory);
 
-            for (int i = 1; i < file.Duration; i++)
+            for (int i = 1; i < videoCollection.Config.Duration; i++)
             {
-                var image = $"{file.FilenameWithoutExtension}.{i}.jpg";
+                var image = $"frame.{i}.jpg";
 
-                file.Images.Add(new FrameImage
+                videoCollection.Data.Images.Add(new VideoImage
                 {
                     Frame = i,
                     Name = image
                 });
 
-                file.Colours.Add(new Colours
+                videoCollection.Data.Colours.Add(new VideoColour
                 {
                     Frame = i,
-                    Hex = ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, file.FullPath, Path.Combine(file.ImageDirectory, image))
+                    Hex = ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, videoCollection.Config.FullPath, Path.Combine(videoCollection.Config.ImageDirectory, image))
                 });
             }
 
-            return file;
+            return videoCollection;
         }
 
-        public static VideoFile BuildColourListAsync(VideoFile file, IProgress<ProgressWrapper> progress)
+        public static VideoCollection BuildColourListAsync(VideoCollection videoCollection, IProgress<ProgressWrapper> progress)
         {
-            Directory.CreateDirectory(file.ImageDirectory);
+            Directory.CreateDirectory(videoCollection.Config.ImageDirectory);
 
-            for (int i = 1; i < file.Duration; i++)
+            for (int i = 1; i < videoCollection.Config.Duration; i++)
             {
-                var image = $"{file.FilenameWithoutExtension}.{i}.jpg";
+                var image = $"frame.{i}.jpg";
 
-                file.Images.Add(new FrameImage
+                videoCollection.Data.Images.Add(new VideoImage
                 {
                     Frame = i,
                     Name = image
                 });
 
-                file.Colours.Add(new Colours
+                videoCollection.Data.Colours.Add(new VideoColour
                 {
                     Frame = i,
-                    Hex = ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, file.FullPath, Path.Combine(file.ImageDirectory, image))
+                    Hex = ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, videoCollection.Config.FullPath, Path.Combine(videoCollection.Config.ImageDirectory, image))
                 });
 
-                progress.Report(new ProgressWrapper(file.Duration, i, ProcessType.BuildColourList));
+                progress.Report(new ProgressWrapper(videoCollection.Config.Duration, i, ProcessType.BuildColourList));
             }
 
-            return file;
+            return videoCollection;
         }
     }
 }

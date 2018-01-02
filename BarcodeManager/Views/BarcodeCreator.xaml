@@ -8,6 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
              xmlns:viewModels="clr-namespace:BarcodeManager.ViewModels"
+             xmlns:barcodeManager="clr-namespace:FilmBarcodes.Common.Models.BarcodeManager;assembly=FilmBarcodes.Common"
              mc:Ignorable="d" Height="Auto"
              d:DataContext="{d:DesignInstance viewModels:BarcodeCreatorViewModel}">
     <Grid>
@@ -85,10 +86,10 @@
                             <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoFile.FileName}" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0,0,0,5">Location:</TextBlock>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoFile.FilePath}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoCollection.Config.FilePath}" />
 
                             <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0,0,0,5">Duration:</TextBlock>
-                            <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoFile.DurationText}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoCollection.Config.DurationText}" />
                         </Grid>
                     </Grid>
 
@@ -104,7 +105,6 @@
                 <Grid Grid.Row="5" Margin="10,0,10,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
@@ -113,11 +113,11 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
+                    <!--<StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5">
                         <ToggleButton VerticalAlignment="Center" IsChecked="{Binding VideoFile.CreateWebPage}" 
                                       Margin="10,0,10,0" Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" ToolTip="MaterialDesignSwitchAccentToggleButton" />
                         <Label>Create web page</Label>
-                    </StackPanel>
+                    </StackPanel>-->
 
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,5">
                         <TextBox materialDesign:HintAssist.Hint="Height" MinWidth="40" TextAlignment="Right" Text="{Binding VideoFile.OutputHeight}" />
@@ -165,7 +165,7 @@
                         </Button>
                         <Label Grid.Row="0" Grid.Column="2">Output directory for all videos</Label>
 
-                        <TextBox Grid.Row="1" Grid.Column="0" materialDesign:HintAssist.Hint="Output directory for this video" MinWidth="200" Text="{Binding VideoFile.OutputDirectory}" />
+                        <TextBox Grid.Row="1" Grid.Column="0" materialDesign:HintAssist.Hint="Output directory for this video" MinWidth="200" Text="{Binding VideoCollection.Config.OutputDirectory}" />
                         <Label Grid.Row="1" Grid.Column="2">Output directory for this video</Label>
                     </Grid>
 
@@ -176,7 +176,7 @@
             </Grid>
         </materialDesign:Card>
 
-        <materialDesign:Card Grid.Row="1" Margin="5,5,5,5" Padding="0,0,0,10" Width="Auto" VerticalAlignment="Top" materialDesign:ShadowAssist.ShadowDepth="Depth5">
+        <materialDesign:Card Grid.Row="1" Margin="5,0,5,5" Padding="0,0,0,10" Width="Auto" VerticalAlignment="Top" materialDesign:ShadowAssist.ShadowDepth="Depth5">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -189,7 +189,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <materialDesign:ColorZone Grid.Row="0" Margin="0,0,0,30" Padding="16" Mode="PrimaryDark">
+                <materialDesign:ColorZone Grid.Row="0" Margin="0,0,0,20" Padding="16" Mode="PrimaryDark">
                     <StackPanel  Orientation="Horizontal">
                         <TextBlock Margin="16,0,0,0" VerticalAlignment="Center">Previously generated barcode(s) found</TextBlock>
                     </StackPanel>
@@ -204,37 +204,52 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <materialDesign:Card Width="200" Margin="4,4,0,0" HorizontalAlignment="Left">
-                        <Grid >
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="140" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Image Width="196" Height="140" Source="Resources/Chartridge046_small.jpg" Stretch="UniformToFill" />
-                            <Button Grid.Row="0" Margin="0,0,16,-20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}">
-                                <materialDesign:PackIcon Kind="Bike" />
-                            </Button>
-                            <StackPanel Grid.Row="1" Margin="8,24,8,0">
-                                <TextBlock FontWeight="Bold">Cycling</TextBlock>
-                                <TextBlock VerticalAlignment="Center" TextWrapping="Wrap">A great way to keep fit and forget about the constant grind of IT.</TextBlock>
-                            </StackPanel>
-                            <StackPanel Grid.Row="2" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
-                                <Button Width="30" Padding="2,0,2,0" materialDesign:RippleAssist.IsCentered="True" Style="{StaticResource MaterialDesignToolButton}"> 
-                                    <materialDesign:PackIcon Kind="ShareVariant" />
-                                </Button>
-                                <Button Width="30" Padding="2,0,2,0" materialDesign:RippleAssist.IsCentered="True" Style="{StaticResource MaterialDesignToolButton}">
-                                    <materialDesign:PackIcon Kind="Heart" />
-                                </Button>
-                                <materialDesign:PopupBox Padding="2,0,2,0" Style="{StaticResource MaterialDesignToolPopupBox}">
-                                    <StackPanel>
-                                        <Button Content="More" />
-                                        <Button Content="Options" />
-                                    </StackPanel>
-                                </materialDesign:PopupBox>
-                            </StackPanel>
-                        </Grid>
-                    </materialDesign:Card>
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Height="310">
+                        <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding VideoCollection.VideoFiles}" 
+                                      Background="{StaticResource MaterialDesignCardBackground}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type barcodeManager:VideoFile}">
+                                    <materialDesign:Card Width="300" Margin="10,0" materialDesign:ShadowAssist.ShadowDepth="Depth4">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Image Width="296" Height="70" Source="{Binding FullOutputFile}" Stretch="UniformToFill" />
+                                            <Button Grid.Row="0" Margin="0,0,16,-20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}">
+                                                <materialDesign:PackIcon Kind="Folder" />
+                                            </Button>
+                                            <StackPanel Grid.Row="1" Margin="10,24,10,10">
+                                                <TextBlock FontWeight="Bold" Text="{Binding OutputFilename}" />
+                                                <TextBlock TextWrapping="Wrap" Text="{Binding OutputFilename}" />
+                                            </StackPanel>
+                                            <!--<StackPanel Grid.Row="2" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
+                                                <Button Width="30" Padding="2,0,2,0" materialDesign:RippleAssist.IsCentered="True" Style="{StaticResource MaterialDesignToolButton}">
+                                                    <materialDesign:PackIcon Kind="ShareVariant" />
+                                                </Button>
+                                                <Button Width="30" Padding="2,0,2,0" materialDesign:RippleAssist.IsCentered="True" Style="{StaticResource MaterialDesignToolButton}">
+                                                    <materialDesign:PackIcon Kind="Heart" />
+                                                </Button>
+                                                <materialDesign:PopupBox Padding="2,0,2,0" Style="{StaticResource MaterialDesignToolPopupBox}">
+                                                    <StackPanel>
+                                                        <Button Content="More" />
+                                                        <Button Content="Options" />
+                                                    </StackPanel>
+                                                </materialDesign:PopupBox>
+                                            </StackPanel>-->
+                                        </Grid>
+                                    </materialDesign:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
             </Grid>
         </materialDesign:Card>

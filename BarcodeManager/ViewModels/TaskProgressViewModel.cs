@@ -1,9 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -45,6 +43,8 @@ namespace BarcodeManager.ViewModels
                 RaisePropertyChangedEvent("State");
             }
         }
+
+        public VideoCollection VideoCollection { get; set; }
 
         public VideoFile VideoFile
         {
@@ -143,9 +143,10 @@ namespace BarcodeManager.ViewModels
             
         }
 
-        public TaskProgressViewModel(VideoFile videoFile, int id)
+        public TaskProgressViewModel(VideoFile videoFile, VideoCollection videoCollection, int id)
         {
             VideoFile = videoFile;
+            VideoCollection = videoCollection;
             Id = id;
             State = State.Queued;
         }
@@ -165,11 +166,11 @@ namespace BarcodeManager.ViewModels
             await Task.Run(() =>
             {
                 // check if the video output directory exists, otherwise create
-                if (!Directory.Exists(VideoFile.FullOutputDirectory))
+                if (!Directory.Exists(VideoCollection.Config.FullOutputDirectory))
                 {
                     try
                     {
-                        Directory.CreateDirectory(VideoFile.FullOutputDirectory);
+                        Directory.CreateDirectory(VideoCollection.Config.FullOutputDirectory);
                     }
                     catch (Exception e)
                     {
@@ -179,11 +180,17 @@ namespace BarcodeManager.ViewModels
                 }
             });
 
-            VideoFile = await Task.Run(() => VideoProcessor.BuildColourListAsync(VideoFile, progress));
+            if (!VideoCollection.Data.Colours.Any())
+                VideoCollection = await Task.Run(() => VideoProcessor.BuildColourListAsync(VideoCollection, progress));
 
-            await Task.Run(() => ImageProcessor.RenderImageAsync(VideoFile, progress));
+            await Task.Run(() => ImageProcessor.RenderImageAsync(VideoCollection, VideoFile, progress));
 
-            await Task.Run(() => { VideoFile.WriteAsync(progress); });
+            await Task.Run(() =>
+            {
+                VideoCollection.VideoFiles.Add(VideoFile);
+
+                VideoCollection.WriteAsync(progress);
+            });
 
             StopTimer();
 

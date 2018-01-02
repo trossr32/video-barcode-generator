@@ -4,6 +4,7 @@
     {
         Home = 0,
         Create,
-        Tasks
+        Tasks,
+        Designs
     }
 }

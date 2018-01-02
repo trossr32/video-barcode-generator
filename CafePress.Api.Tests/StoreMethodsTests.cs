@@ -1,6 +1,7 @@
 ﻿using System;
 using FilmBarcodes.Common;
 using FilmBarcodes.Common.Models.CafePress;
+using FilmBarcodes.Common.Models.Settings;
 using NUnit.Framework;
 
 namespace CafePress.Api.Tests

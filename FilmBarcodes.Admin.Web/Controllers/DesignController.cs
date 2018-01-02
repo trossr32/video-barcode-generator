@@ -4,6 +4,7 @@ using CafePress.Api;
 using FilmBarcodes.Admin.Web.Models;
 using FilmBarcodes.Common;
 using FilmBarcodes.Common.Models.CafePress;
+using FilmBarcodes.Common.Models.Settings;
 
 namespace FilmBarcodes.Admin.Web.Controllers
 {

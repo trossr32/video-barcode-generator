@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BarcodeManager.Models;
-using FilmBarcodes.Common;
-using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models.BarcodeManager;
-using FilmBarcodes.Common.Models.CafePress;
+using FilmBarcodes.Common.Models.Settings;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Newtonsoft.Json;
 
 namespace BarcodeManager.ViewModels
 {
@@ -26,7 +23,8 @@ namespace BarcodeManager.ViewModels
 
         private SettingsWrapper _settings;
         private VideoFile _videoFile;
-        private Visibility _visibleIfVideoFileValid = Visibility.Collapsed;
+        private VideoCollection _videoCollection;
+        //private Visibility _visibleIfVideoFileValid = Visibility.Collapsed;
 
         public SettingsWrapper Settings 
         {
@@ -46,21 +44,34 @@ namespace BarcodeManager.ViewModels
             {
                 _videoFile = value;
 
-                VisibleIfVideoFileValid = _videoFile.IsValid ? Visibility.Visible : Visibility.Collapsed;
+                //VisibleIfVideoFileValid = _videoFile.IsValid ? Visibility.Visible : Visibility.Collapsed;
 
                 RaisePropertyChangedEvent("VideoFile");
             }
         }
 
-        public Visibility VisibleIfVideoFileValid
+        public VideoCollection VideoCollection
         {
-            get => _visibleIfVideoFileValid;
+            get => _videoCollection;
             set
             {
-                _visibleIfVideoFileValid = value;
-                RaisePropertyChangedEvent("VisibleIfVideoFileValid");
+                _videoCollection = value;
+
+                //VisibleIfVideoFileValid = _videoFile.IsValid ? Visibility.Visible : Visibility.Collapsed;
+
+                RaisePropertyChangedEvent("VideoCollection");
             }
         }
+
+        //public Visibility VisibleIfVideoFileValid
+        //{
+        //    get => _visibleIfVideoFileValid;
+        //    set
+        //    {
+        //        _visibleIfVideoFileValid = value;
+        //        RaisePropertyChangedEvent("VisibleIfVideoFileValid");
+        //    }
+        //}
 
         public ICommand ImportFileCommand => new DelegateCommand(ImportFile);
         public ICommand PlayVideoCommand => new DelegateCommand(PlayVideo);
@@ -94,13 +105,37 @@ namespace BarcodeManager.ViewModels
                 //foreach (string filename in openFileDialog.FileNames)
                 //FileTextBox.Text = Path.GetFileName(filename);
 
-                VideoFile = _model.ProcessNewFile(openFileDialog.FileNames.First());
+                BuildVideoCollectionAndVideoFile(openFileDialog.FileNames.First());
+
+                //VideoFile = _model.ProcessNewFile(openFileDialog.FileNames.First());
             }
+        }
+
+        private void BuildVideoCollectionAndVideoFile(string file)
+        {
+            var videoCollectionFile = Path.Combine(Settings.BarcodeManager.OutputDirectory, Path.GetFileNameWithoutExtension(file), "videocollection.json");
+
+            if (File.Exists(videoCollectionFile))
+            {
+                try
+                {
+                    VideoCollection = JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(videoCollectionFile));
+                }
+                catch (Exception)
+                {
+                    // on failure we want to continue as the settings file format may have changed
+                }
+            }
+
+            if (VideoCollection == null)
+                VideoCollection = new VideoCollection(file, Settings.BarcodeManager);
+
+            VideoFile = new VideoFile(VideoCollection.Config.Duration, file);
         }
 
         private void SetWidthToDuration()
         {
-            VideoFile.OutputWidth = VideoFile.Duration;
+            VideoFile.OutputWidth = VideoCollection.Config.Duration;
 
             RaisePropertyChangedEvent("VideoFile");
         }
@@ -114,7 +149,7 @@ namespace BarcodeManager.ViewModels
 
         private void PlayVideo()
         {
-            System.Diagnostics.Process.Start(VideoFile.FullPath);
+            System.Diagnostics.Process.Start(VideoCollection.Config.FullPath);
         }
 
         public void DragOver(IDropInfo dropInfo)
@@ -134,23 +169,25 @@ namespace BarcodeManager.ViewModels
         {
             var dragFileList = ((DataObject)dropInfo.Data).GetFileDropList().Cast<string>();
 
-            VideoFile = _model.ProcessNewFile(dragFileList.First());
+            BuildVideoCollectionAndVideoFile(dragFileList.First());
+
+            //VideoFile = _model.ProcessNewFile(dragFileList.First());
         }
 
         private void CreateBarcode()
         {
             // check if the settings directory has changed (been manually typed)
-            if (!Directory.Exists(Settings.BarcodeManager.OutputDirectory))
-            {
-                var tempSettings = FilmBarcodes.Common.Settings.GetSettings();
+            var tempSettings = FilmBarcodes.Common.Settings.GetSettings();
 
-                if (tempSettings.BarcodeManager.OutputDirectory != Settings.BarcodeManager.OutputDirectory)
-                    FilmBarcodes.Common.Settings.SetSettings(Settings);
-            }
+            if (tempSettings.BarcodeManager.OutputDirectory != Settings.BarcodeManager.OutputDirectory)
+                FilmBarcodes.Common.Settings.SetSettings(Settings);
+            
+            VideoFile.FullOutputFile = Path.Combine(VideoCollection.Config.FullOutputDirectory, VideoFile.OutputFilename);
 
-            VideoFile.FullOutputDirectory = Path.Combine(Settings.BarcodeManager.OutputDirectory, VideoFile.OutputDirectory);
+            _tasksViewModel.AddTask(VideoFile, VideoCollection);
 
-            _tasksViewModel.AddTask(VideoFile);
+            VideoCollection = null;
+            VideoFile = null;
 
             //_mainWindow.SetTab(TabType.Tasks);
         }

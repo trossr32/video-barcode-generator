@@ -63,6 +63,11 @@
     <Compile Include="Helpers\Url.cs" />
     <Compile Include="Helpers\Xml.cs" />
     <Compile Include="ImageProcessor.cs" />
+    <Compile Include="Models\BarcodeManager\VideoCollection.cs" />
+    <Compile Include="Models\BarcodeManager\VideoImage.cs" />
+    <Compile Include="Models\BarcodeManager\VideoColour.cs" />
+    <Compile Include="Models\BarcodeManager\VideoData.cs" />
+    <Compile Include="Models\BarcodeManager\VideoConfig.cs" />
     <Compile Include="Models\BarcodeManager\VideoFile.cs" />
     <Compile Include="Models\CafePress\Color.cs" />
     <Compile Include="Models\CafePress\Design.cs" />
@@ -74,7 +79,7 @@
     <Compile Include="Models\CafePress\Size.cs" />
     <Compile Include="Models\CafePress\StoreLogoImage.cs" />
     <Compile Include="Models\CafePress\Store.cs" />
-    <Compile Include="Models\CafePress\SettingsWrapper.cs" />
+    <Compile Include="Models\Settings\SettingsWrapper.cs" />
     <Compile Include="Models\CafePress\StoreSection.cs" />
     <Compile Include="Models\CafePress\Value.cs" />
     <Compile Include="Models\CafePress\Values.cs" />
