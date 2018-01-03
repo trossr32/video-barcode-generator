@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace BarcodeManager
+namespace BarcodeManager.Views
 {
     /// <summary>
     /// Interaction logic for Home.xaml

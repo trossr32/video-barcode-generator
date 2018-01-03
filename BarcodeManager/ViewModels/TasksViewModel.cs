@@ -3,11 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models.BarcodeManager;
+using FilmBarcodes.Common.Models.Settings;
+using NLog;
 
 namespace BarcodeManager.ViewModels
 {
     public class TasksViewModel : ObservableObject
     {
+        private Logger _logger;
         private ObservableCollection<TaskProgressViewModel> _tasks;
 
         public ObservableCollection<TaskProgressViewModel> Tasks
@@ -20,37 +23,18 @@ namespace BarcodeManager.ViewModels
             }
         }
 
-        public TasksViewModel()
+        public TasksViewModel(SettingsWrapper settings)
         {
+            _logger = LogManager.GetCurrentClassLogger();
+
             _tasks = new ObservableCollection<TaskProgressViewModel>();
-        }
-        
-        private void CreateData()
-        {
-            Tasks = new ObservableCollection<TaskProgressViewModel>
-            {
-                new TaskProgressViewModel
-                {
-                    State = State.Queued
-                },
-                new TaskProgressViewModel
-                {
-                    State = State.Running
-                },
-                new TaskProgressViewModel
-                {
-                    State = State.Success
-                },
-                new TaskProgressViewModel
-                {
-                    State = State.Failure
-                }
-            };
         }
 
         public async void AddTask(VideoFile videoFile, VideoCollection videoCollection)
         {
             int taskId = Tasks.Any() ? Tasks.Max(t => t.Id) + 1 : 1;
+
+            _logger.Info($"Creating task id:{taskId}, {videoFile.FilenameWithoutExtension}");
             
             Tasks.Add(new TaskProgressViewModel(videoFile, videoCollection, taskId));
 

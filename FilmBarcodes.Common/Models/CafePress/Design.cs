@@ -6,6 +6,7 @@ namespace FilmBarcodes.Common.Models.CafePress
     [XmlRoot(ElementName = "designs")]
     public class Designs
     {
+        [XmlElement(ElementName = "design")]
         public List<Design> DesignList { get; set; }
     }
 
@@ -32,5 +33,13 @@ namespace FilmBarcodes.Common.Models.CafePress
         public string Creator { get; set; }
         [XmlAttribute(AttributeName = "folderId")]
         public string FolderId { get; set; }
+        [XmlElement(ElementName = "tag")]
+        public List<string> Tag { get; set; }
+        [XmlAttribute(AttributeName = "folderName")]
+        public string FolderName { get; set; }
+        [XmlAttribute(AttributeName = "mediaUrl")]
+        public string MediaUrl { get; set; }
+        [XmlAttribute(AttributeName = "approvalStatus")]
+        public string ApprovalStatus { get; set; }
     }
 }

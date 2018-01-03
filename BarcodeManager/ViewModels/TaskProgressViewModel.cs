@@ -9,12 +9,15 @@ using FilmBarcodes.Common;
 using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
+using NLog;
 
 namespace BarcodeManager.ViewModels
 {
     public class TaskProgressViewModel : ObservableObject
     {
         public int Id { get; set; }
+
+        private Logger _logger;
 
         private State _state;
         private VideoFile _videoFile;
@@ -138,13 +141,10 @@ namespace BarcodeManager.ViewModels
             }
         }
 
-        public TaskProgressViewModel()
-        {
-            
-        }
-
         public TaskProgressViewModel(VideoFile videoFile, VideoCollection videoCollection, int id)
         {
+            _logger = LogManager.GetCurrentClassLogger();
+
             VideoFile = videoFile;
             VideoCollection = videoCollection;
             Id = id;
@@ -153,38 +153,94 @@ namespace BarcodeManager.ViewModels
 
         public async Task<State> RunTask()
         {
+            _logger.Info($"Running task id:{Id}, {VideoFile.FilenameWithoutExtension}");
+
             State = State.Running;
 
             StartTimer();
 
+            // set up the progress control
             var progress = new Progress<ProgressWrapper>(p =>
             {
                 Progress = p;
                 RaisePropertyChangedEvent("Progress");
             });
 
-            await Task.Run(() =>
+            // check if the video output directory exists, otherwise create
+            var response = await Task<TaskResponse>.Run(() =>
             {
-                // check if the video output directory exists, otherwise create
-                if (!Directory.Exists(VideoCollection.Config.FullOutputDirectory))
+                if (Directory.Exists(VideoCollection.Config.FullOutputDirectory))
+                    return new TaskResponse{Success = true};
+
+                try
                 {
+                    Directory.CreateDirectory(VideoCollection.Config.FullOutputDirectory);
+                }
+                catch (Exception e)
+                {
+                    return new TaskResponse { Success = false, Exception = e, Message = $"Unable to create output directory {VideoCollection.Config.FullOutputDirectory}" };
+                }
+
+                return new TaskResponse { Success = true };
+            });
+
+            if (!response.Success)
+                return ProcessStandardTaskResponse(response);
+
+            // if required, build the colour list
+            if (!VideoCollection.Data.Colours.Any())
+            {
+                var buildColourListResponse = await Task<(TaskResponse taskResponse, VideoCollection videoCollection)>.Run(() =>
+                {
+                    VideoCollection videoCollection = null;
+                    
                     try
                     {
-                        Directory.CreateDirectory(VideoCollection.Config.FullOutputDirectory);
+                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, progress);
                     }
                     catch (Exception e)
                     {
-                        var l = "Unable to create output directory";
-                        throw;
+                        return (new TaskResponse { Success = false, Exception = e, Message = $"Unable to create output directory {VideoCollection.Config.FullOutputDirectory}" }, videoCollection);
                     }
+
+                    return (new TaskResponse {Success = true}, videoCollection);
+                });
+
+                if (!buildColourListResponse.Item1.Success)
+                {
+                    StopTimer();
+
+                    State = State.Failure;
+
+                    Progress.Status = response.Message;
+
+                    _logger.Error(response.Exception, response.Message);
+
+                    return State;
                 }
+
+                VideoCollection = buildColourListResponse.Item2;
+            }
+
+            // render the final image
+            response = await Task<TaskResponse>.Run(() =>
+            {
+                try
+                {
+                    ImageProcessor.RenderImageAsync(VideoCollection, VideoFile, progress);
+                }
+                catch (Exception e)
+                {
+                    return new TaskResponse { Success = false, Exception = e, Message = $"Failed whilst rendering final image {VideoFile.OutputFilename}" };
+                }
+
+                return new TaskResponse { Success = true };
             });
 
-            if (!VideoCollection.Data.Colours.Any())
-                VideoCollection = await Task.Run(() => VideoProcessor.BuildColourListAsync(VideoCollection, progress));
+            if (!response.Success)
+                return ProcessStandardTaskResponse(response);
 
-            await Task.Run(() => ImageProcessor.RenderImageAsync(VideoCollection, VideoFile, progress));
-
+            // update the video collection and write as json
             await Task.Run(() =>
             {
                 VideoCollection.VideoFiles.Add(VideoFile);
@@ -200,6 +256,19 @@ namespace BarcodeManager.ViewModels
 
             RaisePropertyChangedEvent("Progress");
             RaisePropertyChangedEvent("State");
+
+            return State;
+        }
+
+        private State ProcessStandardTaskResponse(TaskResponse response)
+        {
+            StopTimer();
+
+            State = State.Failure;
+
+            Progress.Status = response.Message;
+
+            _logger.Error(response.Exception, response.Message);
 
             return State;
         }

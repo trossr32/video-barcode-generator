@@ -1,7 +1,12 @@
-﻿using System.Windows;
+﻿using System;
+using System.IO;
+using System.Windows;
+using FilmBarcodes.Common;
 using FilmBarcodes.Common.Enums;
+using FilmBarcodes.Common.Models.Settings;
+using NLog;
 
-namespace BarcodeManager
+namespace BarcodeManager.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -12,15 +17,24 @@ namespace BarcodeManager
         private Home _home;
         private CafePressDesigns _cafePressDesigns;
 
+        private SettingsWrapper _settings;
+        private static Logger _logger;
+
         public MainWindow()
         {
             InitializeComponent();
 
+            _logger = LogManager.GetCurrentClassLogger();
+
+            _settings = Settings.GetSettings();
+
+            LogManager.Configuration.Variables["logfile"] = Path.Combine(_settings.BarcodeManager.OutputDirectory, "logs", $"{DateTime.Now:yyyy.MM.dd}.log");
+
             _home = new Home();
 
-            _barcodeCreatorParent = new BarcodeCreatorParent();
+            _barcodeCreatorParent = new BarcodeCreatorParent(_settings);
 
-            _cafePressDesigns = new CafePressDesigns();
+            _cafePressDesigns = new CafePressDesigns(_settings);
 
             ContentArea.Content = _barcodeCreatorParent;
         }

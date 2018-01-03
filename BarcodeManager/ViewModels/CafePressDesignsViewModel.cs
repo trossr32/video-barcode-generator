@@ -1,10 +1,15 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using BarcodeManager.ViewModels.Dialogs;
+using BarcodeManager.Views.Dialogs;
 using CafePress.Api;
+using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.CafePress;
 using FilmBarcodes.Common.Models.Settings;
-using Microsoft.Win32;
+using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 
 namespace BarcodeManager.ViewModels
 {
@@ -12,6 +17,7 @@ namespace BarcodeManager.ViewModels
     {
         private StoreMethods _storeMethods;
         private DesignMethods _designMethods;
+        private List<VideoFile> _localVideoFiles;
 
         private SettingsWrapper _settings;
         private Stores _stores;
@@ -82,6 +88,17 @@ namespace BarcodeManager.ViewModels
             }
         }
 
+        public List<VideoFile> LocalVideoFiles
+        {
+            get => _localVideoFiles;
+            set
+            {
+                _localVideoFiles = value;
+
+                RaisePropertyChangedEvent("LocalVideoFiles");
+            }
+        }
+
         //public Visibility VisibleIfVideoFileValid
         //{
         //    get => _visibleIfVideoFileValid;
@@ -94,19 +111,70 @@ namespace BarcodeManager.ViewModels
 
         public ICommand CreateStoreCommand => new DelegateCommand(CreateStore);
 
-        public CafePressDesignsViewModel()
+        public CafePressDesignsViewModel(SettingsWrapper settings)
         {
-            Settings = FilmBarcodes.Common.Settings.GetSettings();
+            Settings = settings;
 
             _storeMethods = new StoreMethods(Settings);
             _designMethods = new DesignMethods(Settings);
 
             Stores = _storeMethods.ListStores();
+
+            //RaisePropertyChangedEvent("Stores");
+
+            Designs = _designMethods.List();
+
+            GetLocalVideoFiles();
         }
 
-        private void CreateStore()
+        private void GetLocalVideoFiles()
         {
+            LocalVideoFiles = new List<VideoFile>();
+
+            foreach (var directory in Directory.GetDirectories(Settings.BarcodeManager.OutputDirectory))
+            {
+                var collectionFile = Path.Combine(directory, "videocollection.json");
+
+                if (!File.Exists(collectionFile))
+                    continue;
+
+                LocalVideoFiles.AddRange(JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(collectionFile)).VideoFiles);
+            }
+        }
+
+        private async void CreateStore()
+        {
+            var view = new CreateStoreDialog
+            {
+                DataContext = new CreateStoreDialogViewModel()
+            };
             
+            var result = await DialogHost.Show(view, "RootDialog", CreateStoreOpenedEventHandler, CreateStoreClosingEventHandler);
+        }
+
+        private void CreateStoreOpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
+        {
+            //Console.WriteLine("You could intercept the open and affect the dialog using eventArgs.Session.");
+        }
+
+        private void CreateStoreClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+        {
+            if ((bool)eventArgs.Parameter == false)
+                return;
+
+            Stores = _storeMethods.ListStores();
+
+            //OK, lets cancel the close...
+            //eventArgs.Cancel();
+
+            //...now, lets update the "session" with some new content!
+            //eventArgs.Session.UpdateContent(new SampleProgressDialog());
+            //note, you can also grab the session when the dialog opens via the DialogOpenedEventHandler
+
+            //lets run a fake operation for 3 seconds then close this baby.
+            //Task.Delay(TimeSpan.FromSeconds(3))
+            //    .ContinueWith((t, _) => eventArgs.Session.Close(false), null,
+            //        TaskScheduler.FromCurrentSynchronizationContext());
         }
     }
 }

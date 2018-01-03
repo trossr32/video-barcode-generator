@@ -1,23 +1,24 @@
 ﻿using System.Windows.Controls;
 using BarcodeManager.ViewModels;
+using FilmBarcodes.Common.Models.Settings;
 
-namespace BarcodeManager
+namespace BarcodeManager.Views
 {
     /// <summary>
-    /// Interaction logic for Tasks.xaml
+    /// Interaction logic for BarcodeCreatorParent.xaml
     /// </summary>
     public partial class BarcodeCreatorParent : UserControl
     {
-        private BarcodeCreator _barcodeCreator;
+        private Views.BarcodeCreator _barcodeCreator;
         private Tasks _tasks;
 
-        public BarcodeCreatorParent()
+        public BarcodeCreatorParent(SettingsWrapper settings)
         {
             InitializeComponent();
 
-            _tasks = new Tasks();
+            _tasks = new Tasks(settings);
 
-            _barcodeCreator = new BarcodeCreator((TasksViewModel)_tasks.DataContext);
+            _barcodeCreator = new BarcodeCreator((TasksViewModel)_tasks.DataContext, settings);
 
             BarcodeCreatorContent.Content = _barcodeCreator;
             TasksContent.Content = _tasks;

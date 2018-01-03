@@ -1,19 +1,22 @@
 ﻿using System;
 using System.IO;
-using FilmBarcodes.Common.Models.CafePress;
+using System.Runtime.Caching;
 using FilmBarcodes.Common.Models.Settings;
 using Newtonsoft.Json;
+using NLog;
 
 namespace FilmBarcodes.Common
 {
-    public class Settings
+    public static class Settings
     {
         private static readonly string SettingsDir = Path.Combine(Environment.SpecialFolder.LocalApplicationData.ToString(), "Film Barcodes");
         private static readonly string SettingsFile = Path.Combine(SettingsDir, "settings.json");
+        private static readonly string CacheKey = "Settings";
+        private static Logger _logger;
 
         public static SettingsWrapper GetSettings()
         {
-            var settings = new InMemoryCache().GetOrSet("Settings", GetSettingsFromFileOrApi);
+            var settings = new InMemoryCache().GetOrSet(CacheKey, GetSettingsFromFileOrApi);
 
             return settings;
         }
@@ -46,6 +49,8 @@ namespace FilmBarcodes.Common
             Directory.CreateDirectory(SettingsDir);
 
             File.WriteAllText(SettingsFile, JsonConvert.SerializeObject(settings));
+
+            MemoryCache.Default.Add(CacheKey, settings, DateTime.Now.AddDays(1));
         }
     }
 }

@@ -11,6 +11,7 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
+using NLog;
 
 namespace BarcodeManager.ViewModels
 {
@@ -19,12 +20,11 @@ namespace BarcodeManager.ViewModels
         private readonly List<string> _acceptedVideoFiles = new List<string> { "avi", "divx", "m4v", "mkv", "m2ts", "mp4", "mpg", "wmv" };
         private readonly BarcodeCreatorModel _model = new BarcodeCreatorModel();
         private TasksViewModel _tasksViewModel;
-        //private MainWindow _mainWindow;
+        private static Logger _logger;
 
         private SettingsWrapper _settings;
         private VideoFile _videoFile;
         private VideoCollection _videoCollection;
-        //private Visibility _visibleIfVideoFileValid = Visibility.Collapsed;
 
         public SettingsWrapper Settings 
         {
@@ -63,16 +63,6 @@ namespace BarcodeManager.ViewModels
             }
         }
 
-        //public Visibility VisibleIfVideoFileValid
-        //{
-        //    get => _visibleIfVideoFileValid;
-        //    set
-        //    {
-        //        _visibleIfVideoFileValid = value;
-        //        RaisePropertyChangedEvent("VisibleIfVideoFileValid");
-        //    }
-        //}
-
         public ICommand ImportFileCommand => new DelegateCommand(ImportFile);
         public ICommand PlayVideoCommand => new DelegateCommand(PlayVideo);
         public ICommand SetWidthToDurationCommand => new DelegateCommand(SetWidthToDuration);
@@ -80,18 +70,18 @@ namespace BarcodeManager.ViewModels
         public ICommand CreateBarcodeCommand => new DelegateCommand(CreateBarcode);
         public ICommand ChooseSettingsOutputDirectoryCommand => new DelegateCommand(ChooseSettingsOutputDirectory);
 
-        public BarcodeCreatorViewModel(TasksViewModel tasksViewModel)
+        public BarcodeCreatorViewModel(TasksViewModel tasksViewModel, SettingsWrapper settings)
         {
-            Settings = FilmBarcodes.Common.Settings.GetSettings();
+            Settings = settings;
 
-            //_mainWindow = mainWindow;
+            _logger = LogManager.GetCurrentClassLogger();
 
             _tasksViewModel = tasksViewModel;
         }
 
         private void ImportFile()
         {
-            string videoFilePattern = _acceptedVideoFiles.Aggregate("", (current, file) => current + $"*.{file};").TrimEnd(';');
+            string videoFilePattern = _acceptedVideoFiles.Aggregate("", (current, file) => $"{current}*.{file};").TrimEnd(';');
 
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -101,14 +91,7 @@ namespace BarcodeManager.ViewModels
             };
 
             if (openFileDialog.ShowDialog() == true)
-            {
-                //foreach (string filename in openFileDialog.FileNames)
-                //FileTextBox.Text = Path.GetFileName(filename);
-
                 BuildVideoCollectionAndVideoFile(openFileDialog.FileNames.First());
-
-                //VideoFile = _model.ProcessNewFile(openFileDialog.FileNames.First());
-            }
         }
 
         private void BuildVideoCollectionAndVideoFile(string file)
@@ -123,7 +106,7 @@ namespace BarcodeManager.ViewModels
                 }
                 catch (Exception)
                 {
-                    // on failure we want to continue as the settings file format may have changed
+                    // on failure we want to continue as the video collection file format may have changed
                 }
             }
 
@@ -188,8 +171,6 @@ namespace BarcodeManager.ViewModels
 
             VideoCollection = null;
             VideoFile = null;
-
-            //_mainWindow.SetTab(TabType.Tasks);
         }
         
         private void ChooseSettingsOutputDirectory()

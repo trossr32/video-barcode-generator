@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace BarcodeManager.ViewModels
+namespace BarcodeManager
 {
     public class DelegateCommand : ICommand
     {

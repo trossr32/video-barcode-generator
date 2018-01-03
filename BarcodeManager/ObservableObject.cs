@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BarcodeManager.ViewModels
+namespace BarcodeManager
 {
     public abstract class ObservableObject : INotifyPropertyChanged
     {

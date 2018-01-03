@@ -16,8 +16,6 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
             FilenameWithoutExtension = string.IsNullOrEmpty(file) 
                 ? "" 
                 : Path.GetFileNameWithoutExtension(file);
-
-
         }
 
         public int OutputWidth { get; set; }

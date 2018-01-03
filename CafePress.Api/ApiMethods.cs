@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Xml.Serialization;
+using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Helpers;
 using FilmBarcodes.Common.Models.CafePress;
 using FilmBarcodes.Common.Models.Settings;
+using NLog;
 
 namespace CafePress.Api
 {
     public class ApiMethods
     {
+        private Logger _logger;
         private SettingsWrapper _settingsWrapper;
 
         public ApiMethods(SettingsWrapper settingsWrapper)
         {
             _settingsWrapper = settingsWrapper;
+
+            _logger = LogManager.GetCurrentClassLogger();
         }
 
         public string CallApiString(string method, Dictionary<string, string> parameters = null, bool requiresUserToken = false)
@@ -39,7 +44,7 @@ namespace CafePress.Api
             if (apiCallType == ApiCallType.UploadString)
                 parameters.Add(xmlKey, xml);
 
-            Help help;
+            Help help = null;
             string resp = null;
 
             try
@@ -61,21 +66,23 @@ namespace CafePress.Api
             }
             catch (WebException e)
             {
-                if (e.Status != WebExceptionStatus.ProtocolError)
+                if (e.Status == WebExceptionStatus.ProtocolError && e.Response is HttpWebResponse response && response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    resp = new StreamReader(e.Response.GetResponseStream() ?? throw e).ReadToEnd();
+
+                    help = CheckResponse(resp);
+                }
+                else
+                {
+                    _logger.Error(e, "");
+
                     throw;
-
-                if (!(e.Response is HttpWebResponse response))
-                    throw;
-
-                if (response.StatusCode != HttpStatusCode.BadRequest)
-                    throw;
-
-                resp = new StreamReader(e.Response.GetResponseStream() ?? throw e).ReadToEnd();
-
-                help = CheckResponse(resp);
+                }
             }
             catch (Exception e)
             {
+                _logger.Error(e, "");
+
                 throw;
             }
 
@@ -103,11 +110,21 @@ namespace CafePress.Api
                     help = CheckResponse(resp);
 
                     if (help != null)
-                        throw new Exception($"Unable to authenticate user, response form API is: {help.Exceptionmessage}");
+                    {
+                        var e = new Exception($"Unable to authenticate user, response form API is: {help.Exceptionmessage}");
+
+                        _logger.Error(e);
+
+                        throw e;
+                    }
                 }
                 else
                 {
-                    throw new Exception($"Invalid response from API call: {help.Exceptionmessage}");
+                    var e = new Exception($"Invalid response from API call: {help.Exceptionmessage}");
+
+                    _logger.Error(e);
+
+                    throw e;
                 }
             }
 
@@ -125,7 +142,7 @@ namespace CafePress.Api
                     help = (Help)new XmlSerializer(typeof(Help)).Deserialize(reader);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return help;
             }
@@ -135,13 +152,11 @@ namespace CafePress.Api
 
         private string BuildUrl(Dictionary<string, string> parameters, string method)
         {
-            return $"{_settingsWrapper.CafePress.ApiUrl}{method}?v=3&appKey={_settingsWrapper.CafePress.AppKey}{parameters.StringifyParametersDictionary()}";
-        }
-    }
+            var uri = $"{_settingsWrapper.CafePress.ApiUrl}{method}?v=3&appKey={_settingsWrapper.CafePress.AppKey}{parameters.StringifyParametersDictionary()}";
 
-    public enum ApiCallType
-    {
-        DownloadString = 0,
-        UploadString
+            _logger.Debug($"calling CafePress API: {uri}");
+
+            return uri;
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace FilmBarcodes.Common
                 return item;
 
             item = getItemCallback();
+
             MemoryCache.Default.Add(cacheKey, item, DateTime.Now.AddDays(1));
 
             return item;
