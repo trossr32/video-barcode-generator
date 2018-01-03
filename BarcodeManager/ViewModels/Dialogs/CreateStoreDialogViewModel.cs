@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using CafePress.Api;
+using FilmBarcodes.Common;
 using FilmBarcodes.Common.Models.CafePress;
 using FilmBarcodes.Common.Models.Settings;
 

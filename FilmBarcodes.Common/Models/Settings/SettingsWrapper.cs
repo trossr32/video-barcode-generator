@@ -5,11 +5,13 @@ namespace FilmBarcodes.Common.Models.Settings
 {
     public class SettingsWrapper
     {
+        private readonly string DefaultOutputDirectory = @"Q:\Film Barcodes";
+
         public SettingsWrapper()
         {
             BarcodeManager = new BarcodeManager
             {
-                OutputDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
+                OutputDirectory = DefaultOutputDirectory
             };
 
             CafePress = new CafePress
@@ -31,15 +33,7 @@ namespace FilmBarcodes.Common.Models.Settings
 
     public class BarcodeManager
     {
-        private string _outputDirectory;
-
-        public string OutputDirectory
-        {
-            get => string.IsNullOrEmpty(_outputDirectory)
-                ? Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
-                : _outputDirectory;
-            set => _outputDirectory = value;
-        }
+        public string OutputDirectory { get; set; } = @"Q:\Film Barcodes";
 
         public List<string> AcceptedVideoFiles => new List<string> { "avi", "divx", "m4v", "mkv", "m2ts", "mp4", "mpg", "wmv" };
     }

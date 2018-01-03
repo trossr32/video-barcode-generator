@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BarcodeManager
+namespace FilmBarcodes.Common
 {
     public abstract class ObservableObject : INotifyPropertyChanged
     {

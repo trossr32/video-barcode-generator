@@ -12,8 +12,12 @@ namespace FilmBarcodes.Common.Models
             switch (processType)
             {
                 case ProcessType.BuildColourList:
-                    Progress = (int) Math.Round(framesProcessed / (double) totalFrames * 98);
+                    Progress = (int) Math.Round(framesProcessed / (double) totalFrames * 88);
                     Status = $"Frames: {framesProcessed} of {totalFrames}";
+                    break;
+                case ProcessType.ZipArchive:
+                    Progress = framesProcessed / 10 + 88;
+                    Status = $"Zipping frame images: {framesProcessed}%";
                     break;
                 case ProcessType.RenderImage:
                     Progress = 99;

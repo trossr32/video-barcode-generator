@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using FilmBarcodes.Common;
 using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.Settings;

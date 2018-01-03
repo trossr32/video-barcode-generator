@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace BarcodeManager
+namespace FilmBarcodes.Common
 {
     public class DelegateCommand : ICommand
     {

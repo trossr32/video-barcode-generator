@@ -15,9 +15,9 @@ namespace BarcodeManager.ViewModels
 {
     public class TaskProgressViewModel : ObservableObject
     {
-        public int Id { get; set; }
+        public int Id { get; }
 
-        private Logger _logger;
+        private readonly Logger _logger;
 
         private State _state;
         private VideoFile _videoFile;
@@ -34,7 +34,7 @@ namespace BarcodeManager.ViewModels
         public State State
         {
             get => _state;
-            set
+            private set
             {
                 _state = value;
 
@@ -47,7 +47,7 @@ namespace BarcodeManager.ViewModels
             }
         }
 
-        public VideoCollection VideoCollection { get; set; }
+        private VideoCollection VideoCollection { get; set; }
 
         public VideoFile VideoFile
         {
@@ -63,7 +63,7 @@ namespace BarcodeManager.ViewModels
         
         public bool IsSelected
         {
-            get { return _isSelected; }
+            get => _isSelected;
             set
             {
                 //if (_isSelected == value) return;
@@ -167,7 +167,7 @@ namespace BarcodeManager.ViewModels
             });
 
             // check if the video output directory exists, otherwise create
-            var response = await Task<TaskResponse>.Run(() =>
+            var response = await Task.Run(() =>
             {
                 if (Directory.Exists(VideoCollection.Config.FullOutputDirectory))
                     return new TaskResponse{Success = true};
@@ -190,7 +190,7 @@ namespace BarcodeManager.ViewModels
             // if required, build the colour list
             if (!VideoCollection.Data.Colours.Any())
             {
-                var buildColourListResponse = await Task<(TaskResponse taskResponse, VideoCollection videoCollection)>.Run(() =>
+                var buildColourListResponse = await Task.Run(() =>
                 {
                     VideoCollection videoCollection = null;
                     
@@ -220,10 +220,30 @@ namespace BarcodeManager.ViewModels
                 }
 
                 VideoCollection = buildColourListResponse.Item2;
+
+                // archive the frame images and then delete the directory
+                response = await Task.Run(() =>
+                {
+                    try
+                    {
+                        ZipProcessor.ZipDirectoryAsync(VideoCollection.Config.ImageDirectory, progress);
+
+                        Directory.Delete(VideoCollection.Config.ImageDirectory);
+                    }
+                    catch (Exception e)
+                    {
+                        return new TaskResponse { Success = false, Exception = e, Message = "Failed to zip frame images" };
+                    }
+
+                    return new TaskResponse { Success = true };
+                });
+
+                if (!response.Success)
+                    return ProcessStandardTaskResponse(response);
             }
 
             // render the final image
-            response = await Task<TaskResponse>.Run(() =>
+            response = await Task.Run(() =>
             {
                 try
                 {

@@ -5,6 +5,7 @@ using System.Windows.Input;
 using BarcodeManager.ViewModels.Dialogs;
 using BarcodeManager.Views.Dialogs;
 using CafePress.Api;
+using FilmBarcodes.Common;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.CafePress;
 using FilmBarcodes.Common.Models.Settings;

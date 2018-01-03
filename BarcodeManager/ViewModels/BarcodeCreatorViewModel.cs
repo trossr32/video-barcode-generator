@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using BarcodeManager.Models;
+using FilmBarcodes.Common;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.Settings;
 using GongSolutions.Wpf.DragDrop;
