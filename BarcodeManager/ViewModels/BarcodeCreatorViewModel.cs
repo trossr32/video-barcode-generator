@@ -166,6 +166,8 @@ namespace BarcodeManager.ViewModels
             if (tempSettings.BarcodeManager.OutputDirectory != Settings.BarcodeManager.OutputDirectory)
                 FilmBarcodes.Common.Settings.SetSettings(Settings);
             
+            VideoCollection.Config.FullOutputDirectory = Path.Combine(Settings.BarcodeManager.OutputDirectory, VideoCollection.Config.OutputDirectory);
+
             VideoFile.FullOutputFile = Path.Combine(VideoCollection.Config.FullOutputDirectory, VideoFile.OutputFilename);
 
             _tasksViewModel.AddTask(VideoFile, VideoCollection);
