@@ -1,0 +1,27 @@
+{
+    "BarcodeManager": {
+        "OutputDirectory": "Q:\\Film Barcodes",
+        "AcceptedVideoFiles": [
+            "avi",
+            "divx",
+            "m4v",
+            "mkv",
+            "m2ts",
+            "mp4",
+            "mpg",
+            "wmv"
+        ]
+    },
+    "CafePress": {
+        "ApiUrl": "http://open-api.cafepress.com/",
+        "AppKey": "c3cwruiq405i2or26foviseoyrhivlaxaxbi",
+        "Credentials": {
+            "Email": "rob@200sx.org.uk",
+            "Password": "zmszj6OP27cA"
+        },
+        "AuthenticationToken": {
+            "Token": "e7d77289-83f2-4d58-b35d-ac418dea82d6",
+            "Created": "2018-01-04T10:47:28.2056245+00:00"
+        }
+    }
+}

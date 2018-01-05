@@ -48,7 +48,7 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
         }
 
         public TimeSpan DurationTimeSpan { get; set; }
-        public int Duration => Convert.ToInt32(Math.Round(DurationTimeSpan.TotalSeconds, 0));
+        public int Duration => Convert.ToInt32(Math.Floor(DurationTimeSpan.TotalSeconds));
         public string DurationText => DurationTimeSpan.ToString("g");
 
         public string FullPath { get; set; }

@@ -28,7 +28,7 @@ namespace BarcodeManager.Views
 
             _settings = Settings.GetSettings();
 
-            LogManager.Configuration.Variables["logfile"] = Path.Combine(_settings.BarcodeManager.OutputDirectory, "logs", $"{DateTime.Now:yyyy.MM.dd}.log");
+            LogManager.Configuration.Variables["logfile"] = Path.Combine(_settings.BarcodeManager.OutputDirectory, ".logs", $"{DateTime.Now:yyyy.MM.dd}.log");
 
             _home = new Home();
 

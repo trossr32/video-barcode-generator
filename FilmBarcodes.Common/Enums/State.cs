@@ -5,6 +5,7 @@
         Queued = 0,
         Running,
         Success,
-        Failure
+        Failure,
+        Cancelled
     }
 }

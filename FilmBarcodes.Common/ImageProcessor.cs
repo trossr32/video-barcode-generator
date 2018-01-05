@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
@@ -12,17 +13,17 @@ namespace FilmBarcodes.Common
 {
     public class ImageProcessor
     {
-        public static string GetAverageHtmlColourFromImageStreamUsingScale(int frameTime, string file, string frameImage)
+        public static string GetAverageHtmlColourFromImageStreamUsingScale(int frameTime, string file, VideoCollection videoCollection)
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                new NReco.VideoConverter.FFMpegConverter().GetVideoThumbnail(file, ms, frameTime);
-                
-                Image.FromStream(ms).Save(frameImage, ImageFormat.Jpeg);
+                new NReco.VideoConverter.FFMpegConverter().GetVideoThumbnail(videoCollection.Config.FullPath, ms, frameTime);
+
+                Image.FromStream(ms).Save(Path.Combine(videoCollection.Config.ImageDirectory, file), ImageFormat.Jpeg);
 
                 ms.Seek(0, SeekOrigin.Begin);
 
-                using (MagickImage image = new MagickImage(ms, new MagickReadSettings{Format = MagickFormat.Jpeg}))
+                using (MagickImage image = new MagickImage(ms, new MagickReadSettings { Format = MagickFormat.Jpeg }))
                 {
                     image.Crop(new MagickGeometry(new Percentage(70), new Percentage(70)), Gravity.Center);
                     image.Scale(1, 1);
@@ -34,34 +35,20 @@ namespace FilmBarcodes.Common
             }
         }
 
-        public static void RenderImage(VideoCollection videoCollection, VideoFile file)
+        public static string GetAverageHtmlColourFromImageUsingScale(int frame, VideoCollection videoCollection)
         {
-            var bmp = new Bitmap(file.OutputWidth, file.OutputHeight);
-
-            using (Graphics graph = Graphics.FromImage(bmp))
+            using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.ImageDirectory, $"frame.{frame}.jpg")))
             {
-                double frame = 0;
-                double frameJump = videoCollection.Data.Colours.Count / (double)file.OutputWidth;
+                image.Crop(new MagickGeometry(new Percentage(70), new Percentage(70)), Gravity.Center);
+                image.Scale(1, 1);
 
-                for (var i = 0; i < file.OutputWidth; i++)
-                {
-                    frame = frame + frameJump;
+                MagickColor color = image.GetPixels().First().ToColor();
 
-                    Rectangle imageSize = new Rectangle(i, 0, i, file.OutputHeight);
-
-                    var copyFrame = Convert.ToInt32(Math.Round(frame));
-
-                    file.Data.Colours.Add(videoCollection.Data.Colours.First(c => c.Frame == copyFrame));
-                    file.Data.Images.Add(videoCollection.Data.Images.First(c => c.Frame == copyFrame));
-
-                    graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(file.Data.Colours.Last().Hex)), imageSize);
-                }
+                return ColorTranslator.ToHtml(Color.FromArgb(color.ToColor().ToArgb()));
             }
-
-            bmp.Save(Path.Combine(videoCollection.Config.FullOutputDirectory, file.OutputFilename), ImageFormat.Jpeg);
         }
 
-        public static void RenderImageAsync(VideoCollection videoCollection, VideoFile file, IProgress<ProgressWrapper> progress)
+        public static void RenderImageAsync(VideoCollection videoCollection, VideoFile file, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
             var bmp = new Bitmap(file.OutputWidth, file.OutputHeight);
 
@@ -72,6 +59,8 @@ namespace FilmBarcodes.Common
 
                 for (var i = 0; i < file.OutputWidth; i++)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     frame = frame + frameJump;
 
                     Rectangle imageSize = new Rectangle(i, 0, i, file.OutputHeight);

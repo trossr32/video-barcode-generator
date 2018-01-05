@@ -11,8 +11,9 @@ namespace BarcodeManager.ViewModels
 {
     public class TasksViewModel : ObservableObject
     {
-        private Logger _logger;
+        private readonly Logger _logger;
         private ObservableCollection<TaskProgressViewModel> _tasks;
+        private bool _taskListVisible;
 
         public ObservableCollection<TaskProgressViewModel> Tasks
         {
@@ -21,6 +22,16 @@ namespace BarcodeManager.ViewModels
             {
                 _tasks = value;
                 RaisePropertyChangedEvent("Tasks");
+            }
+        }
+
+        public bool TaskListVisible
+        {
+            get => _taskListVisible;
+            set
+            {
+                _taskListVisible = value;
+                RaisePropertyChangedEvent("TaskListVisible");
             }
         }
 
@@ -37,7 +48,9 @@ namespace BarcodeManager.ViewModels
 
             _logger.Info($"Creating task id:{taskId}, {videoFile.FilenameWithoutExtension}");
             
-            Tasks.Add(new TaskProgressViewModel(videoFile, videoCollection, taskId));
+            Tasks.Add(new TaskProgressViewModel(this, videoFile, videoCollection, taskId));
+
+            TaskListVisible = true;
 
             if (Tasks.Any(t => t.State == State.Running))
                 return;
@@ -58,6 +71,15 @@ namespace BarcodeManager.ViewModels
             await Tasks.OrderBy(t => t.Id).First(t => t.State == State.Queued).RunTask();
 
             TaskComplete();
+        }
+
+        internal void DeleteTask(TaskProgressViewModel task)
+        {
+            Tasks.Remove(task);
+
+            TaskListVisible = Tasks.Any();
+
+            RaisePropertyChangedEvent("Tasks");
         }
     }
 }

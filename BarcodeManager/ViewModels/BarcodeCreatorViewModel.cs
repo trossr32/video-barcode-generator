@@ -26,6 +26,8 @@ namespace BarcodeManager.ViewModels
         private SettingsWrapper _settings;
         private VideoFile _videoFile;
         private VideoCollection _videoCollection;
+        private bool _useExistingFrameImagesVisible;
+        private bool _previousBarcodesVisible;
 
         public SettingsWrapper Settings 
         {
@@ -44,9 +46,7 @@ namespace BarcodeManager.ViewModels
             set
             {
                 _videoFile = value;
-
-                //VisibleIfVideoFileValid = _videoFile.IsValid ? Visibility.Visible : Visibility.Collapsed;
-
+                
                 RaisePropertyChangedEvent("VideoFile");
             }
         }
@@ -61,6 +61,28 @@ namespace BarcodeManager.ViewModels
                 //VisibleIfVideoFileValid = _videoFile.IsValid ? Visibility.Visible : Visibility.Collapsed;
 
                 RaisePropertyChangedEvent("VideoCollection");
+            }
+        }
+
+        public bool UseExistingFrameImagesVisible
+        {
+            get => _useExistingFrameImagesVisible;
+            set
+            {
+                _useExistingFrameImagesVisible = value;
+
+                RaisePropertyChangedEvent("UseExistingFrameImagesVisible");
+            }
+        }
+
+        public bool PreviousBarcodesVisible
+        {
+            get => _previousBarcodesVisible;
+            set
+            {
+                _previousBarcodesVisible = value;
+
+                RaisePropertyChangedEvent("PreviousBarcodesVisible");
             }
         }
 
@@ -115,6 +137,23 @@ namespace BarcodeManager.ViewModels
                 VideoCollection = new VideoCollection(file, Settings.BarcodeManager);
 
             VideoFile = new VideoFile(VideoCollection.Config.Duration, file);
+
+            PreviousBarcodesVisible = VideoCollection.VideoFiles.Any();
+
+            if (Directory.Exists(VideoCollection.Config.ImageDirectory))
+            {
+                var fileCount = Directory.GetFiles(VideoCollection.Config.ImageDirectory).Length;
+
+                // frame image count tends to be 1 less than duration seconds (rounding or for index error?)
+                UseExistingFrameImagesVisible = fileCount >= VideoCollection.Config.Duration - 1 &&
+                                                fileCount <= VideoCollection.Config.Duration;
+
+                VideoFile.UseExistingFrameImages = true;
+
+                RaisePropertyChangedEvent("VideoFile");
+            }
+            else
+                UseExistingFrameImagesVisible = false;
         }
 
         private void SetWidthToDuration()
@@ -174,6 +213,7 @@ namespace BarcodeManager.ViewModels
 
             VideoCollection = null;
             VideoFile = null;
+            UseExistingFrameImagesVisible = false;
         }
         
         private void ChooseSettingsOutputDirectory()

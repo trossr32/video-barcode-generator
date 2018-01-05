@@ -28,6 +28,11 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
         public string OutputFilename => $"{FilenameWithoutExtension}_{OutputWidth}_{OutputHeight}.jpg";
         public string FullOutputFile { get; set; }
 
+        /// <summary>
+        ///   Use this field if the frame images were created successfully but the following steps failed (zip, build & write json)
+        /// </summary>
+        public bool UseExistingFrameImages { get; set; }
+
         public VideoData Data { get; set; } = new VideoData();
     }
 }

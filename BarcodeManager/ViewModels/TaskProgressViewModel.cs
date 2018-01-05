@@ -2,8 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using FilmBarcodes.Common;
 using FilmBarcodes.Common.Enums;
@@ -17,19 +18,17 @@ namespace BarcodeManager.ViewModels
     {
         public int Id { get; }
 
+        private readonly TasksViewModel _parent;
         private readonly Logger _logger;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
         private State _state;
         private VideoFile _videoFile;
-        private bool _isSelected;
         private TimeSpan _elapsed;
         private DispatcherTimer _timer;
         private Stopwatch _stopWatch;
         private ProgressWrapper _progress;
-        private Visibility _queuedVisible = Visibility.Collapsed;
-        private Visibility _runningVisible = Visibility.Collapsed;
-        private Visibility _successVisible = Visibility.Collapsed;
-        private Visibility _failureVisible = Visibility.Collapsed;
+        private TaskProgressVisibility _taskProgressVisibility = new TaskProgressVisibility();
 
         public State State
         {
@@ -38,11 +37,12 @@ namespace BarcodeManager.ViewModels
             {
                 _state = value;
 
-                QueuedVisible = _state == State.Queued ? Visibility.Visible : Visibility.Collapsed;
-                RunningVisible = _state == State.Running ? Visibility.Visible : Visibility.Collapsed;
-                SuccessVisible = _state == State.Success ? Visibility.Visible : Visibility.Collapsed;
-                FailureVisible = _state == State.Failure ? Visibility.Visible : Visibility.Collapsed;
-                
+                TaskProgressVisibility.QueuedVisible = _state == State.Queued;
+                TaskProgressVisibility.RunningVisible = _state == State.Running;
+                TaskProgressVisibility.SuccessVisible = _state == State.Success;
+                TaskProgressVisibility.FailureVisible = _state == State.Failure;
+                TaskProgressVisibility.CancelledVisible = _state == State.Cancelled;
+
                 RaisePropertyChangedEvent("State");
             }
         }
@@ -58,18 +58,6 @@ namespace BarcodeManager.ViewModels
                 _videoFile = value;
                 
                 RaisePropertyChangedEvent("VideoFile");
-            }
-        }
-        
-        public bool IsSelected
-        {
-            get => _isSelected;
-            set
-            {
-                //if (_isSelected == value) return;
-                _isSelected = value;
-                
-                RaisePropertyChangedEvent("IsSelected");
             }
         }
 
@@ -97,58 +85,30 @@ namespace BarcodeManager.ViewModels
             }
         }
 
-        public Visibility QueuedVisible
+        public TaskProgressVisibility TaskProgressVisibility
         {
-            get => _queuedVisible;
+            get => _taskProgressVisibility;
             set
             {
-                _queuedVisible = value;
-                
-                RaisePropertyChangedEvent("QueuedVisible");
+                _taskProgressVisibility = value;
+
+                RaisePropertyChangedEvent("TaskProgressVisibility");
             }
         }
 
-        public Visibility RunningVisible
-        {
-            get => _runningVisible;
-            set
-            {
-                _runningVisible = value;
-                
-                RaisePropertyChangedEvent("RunningVisible");
-            }
-        }
+        public ICommand CancelTaskCommand => new DelegateCommand(CancelTask);
+        public ICommand DeleteTaskCommand => new DelegateCommand(DeleteTask);
 
-        public Visibility SuccessVisible
+        public TaskProgressViewModel(TasksViewModel parent, VideoFile videoFile, VideoCollection videoCollection, int id)
         {
-            get => _successVisible;
-            set
-            {
-                _successVisible = value;
-                
-                RaisePropertyChangedEvent("SuccessVisible");
-            }
-        }
-
-        public Visibility FailureVisible
-        {
-            get => _failureVisible;
-            set
-            {
-                _failureVisible = value;
-                
-                RaisePropertyChangedEvent("FailureVisible");
-            }
-        }
-
-        public TaskProgressViewModel(VideoFile videoFile, VideoCollection videoCollection, int id)
-        {
+            _parent = parent;
             _logger = LogManager.GetCurrentClassLogger();
 
             VideoFile = videoFile;
             VideoCollection = videoCollection;
             Id = id;
             State = State.Queued;
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         public async Task<State> RunTask()
@@ -185,7 +145,7 @@ namespace BarcodeManager.ViewModels
             });
 
             if (!response.Success)
-                return ProcessStandardTaskResponse(response);
+                return ProcessUnsuccessfulTaskResponse(response);
 
             // if required, build the colour list
             if (!VideoCollection.Data.Colours.Any())
@@ -196,7 +156,11 @@ namespace BarcodeManager.ViewModels
                     
                     try
                     {
-                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, progress);
+                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, VideoFile, progress, _cancellationTokenSource.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return (new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.FilenameWithoutExtension}" }, videoCollection);
                     }
                     catch (Exception e)
                     {
@@ -207,17 +171,7 @@ namespace BarcodeManager.ViewModels
                 });
 
                 if (!buildColourListResponse.Item1.Success)
-                {
-                    StopTimer();
-
-                    State = State.Failure;
-
-                    Progress.Status = response.Message;
-
-                    _logger.Error(response.Exception, response.Message);
-
-                    return State;
-                }
+                    return ProcessUnsuccessfulTaskResponse(buildColourListResponse.Item1);
 
                 VideoCollection = buildColourListResponse.Item2;
 
@@ -226,9 +180,13 @@ namespace BarcodeManager.ViewModels
                 {
                     try
                     {
-                        ZipProcessor.ZipDirectoryAsync(VideoCollection.Config.ImageDirectory, progress);
+                        ZipProcessor.ZipDirectoryAsync(VideoCollection.Config.ImageDirectory, progress, _cancellationTokenSource.Token);
 
-                        Directory.Delete(VideoCollection.Config.ImageDirectory);
+                        Directory.Delete(VideoCollection.Config.ImageDirectory, true);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.FilenameWithoutExtension}" };
                     }
                     catch (Exception e)
                     {
@@ -239,7 +197,7 @@ namespace BarcodeManager.ViewModels
                 });
 
                 if (!response.Success)
-                    return ProcessStandardTaskResponse(response);
+                    return ProcessUnsuccessfulTaskResponse(response);
             }
 
             // render the final image
@@ -247,7 +205,11 @@ namespace BarcodeManager.ViewModels
             {
                 try
                 {
-                    ImageProcessor.RenderImageAsync(VideoCollection, VideoFile, progress);
+                    ImageProcessor.RenderImageAsync(VideoCollection, VideoFile, progress, _cancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.FilenameWithoutExtension}" };
                 }
                 catch (Exception e)
                 {
@@ -258,7 +220,7 @@ namespace BarcodeManager.ViewModels
             });
 
             if (!response.Success)
-                return ProcessStandardTaskResponse(response);
+                return ProcessUnsuccessfulTaskResponse(response);
 
             // update the video collection and write as json
             await Task.Run(() =>
@@ -274,23 +236,48 @@ namespace BarcodeManager.ViewModels
 
             Progress.Status = "Complete!";
 
-            RaisePropertyChangedEvent("Progress");
-            RaisePropertyChangedEvent("State");
+            RaiseTaskResponsePropertyChangedEvents();
 
             return State;
         }
 
-        private State ProcessStandardTaskResponse(TaskResponse response)
+        private void CancelTask()
+        {
+            _cancellationTokenSource?.Cancel();
+        }
+
+        private void DeleteTask()
+        {
+            _parent.DeleteTask(this);
+        }
+
+        private State ProcessUnsuccessfulTaskResponse(TaskResponse response)
         {
             StopTimer();
 
-            State = State.Failure;
+            if (response.Cancelled)
+            {
+                State = State.Cancelled;
+                _logger.Warn(response.Message);
+            }
+            else
+            {
+                State = State.Failure;
+                _logger.Error(response.Exception, response.Message);
+            }
 
             Progress.Status = response.Message;
 
-            _logger.Error(response.Exception, response.Message);
+            RaiseTaskResponsePropertyChangedEvents();
 
             return State;
+        }
+
+        private void RaiseTaskResponsePropertyChangedEvents()
+        {
+            RaisePropertyChangedEvent("Progress");
+            RaisePropertyChangedEvent("State");
+            RaisePropertyChangedEvent("TaskProgressVisibility");
         }
 
         private void StartTimer()
