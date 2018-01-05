@@ -5,23 +5,27 @@ namespace FilmBarcodes.Common.Models
 {
     public class ProgressWrapper
     {
-        public ProgressWrapper(int totalFrames, int framesProcessed, ProcessType processType)
+        public ProgressWrapper(int totalProgress, int currentProgress, ProcessType processType)
         {
-            Frames = framesProcessed;
+            Frames = currentProgress;
 
             switch (processType)
             {
                 case ProcessType.BuildColourList:
-                    Progress = (int) Math.Round(framesProcessed / (double) totalFrames * 88);
-                    Status = $"Frames: {framesProcessed} of {totalFrames}";
+                    Progress = (int) Math.Round(currentProgress / (double) totalProgress * 100);
+                    Status = $"Frames: {currentProgress} of {totalProgress}";
                     break;
                 case ProcessType.ZipArchive:
-                    Progress = framesProcessed / 10 + 88;
-                    Status = $"Zipping frame images: {framesProcessed}%";
+                    Progress = currentProgress;
+                    Status = currentProgress == 0 ? "Initiating zip of frame images..." : $"Zipping frame images: {currentProgress}%";
+                    break;
+                case ProcessType.DeleteFrameImages:
+                    Progress = 100;
+                    Status = "Deleting frame images directory...";
                     break;
                 case ProcessType.RenderImage:
-                    Progress = 99;
-                    Status = "Rendering image...";
+                    Progress = (int)Math.Round(currentProgress / (double)totalProgress * 100);
+                    Status = $"Rendering image frame: {currentProgress} of {totalProgress}";
                     break;
                 case ProcessType.WriteVideoFile:
                     Progress = 100;

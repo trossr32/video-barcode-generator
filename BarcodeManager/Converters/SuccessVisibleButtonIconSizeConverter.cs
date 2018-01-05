@@ -8,7 +8,7 @@ namespace BarcodeManager.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null && (bool) value ? 22 : 32;
+            return value != null && (bool) value ? 19 : 32;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -13,6 +13,8 @@ namespace FilmBarcodes.Common
     {
         public static void ZipDirectoryAsync(string dir, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
+            progress.Report(new ProgressWrapper(0, 0, ProcessType.ZipArchive));
+
             string sevenZipPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Environment.Is64BitProcess ? "x64" : "x86", "7z.dll");
 
             SevenZipBase.SetLibraryPath(sevenZipPath);

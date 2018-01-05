@@ -234,7 +234,7 @@ namespace BarcodeManager.ViewModels
 
             State = State.Success;
 
-            Progress.Status = "Complete!";
+            Progress.Status = $"Completed in {Elapsed:hh\\:mm\\:ss}";
 
             RaiseTaskResponsePropertyChangedEvents();
 

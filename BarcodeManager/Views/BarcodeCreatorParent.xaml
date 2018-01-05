@@ -8,8 +8,8 @@
              d:DataContext="{d:DesignInstance viewModels:TasksViewModel}">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="60*" />
-            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="51*" />
+            <ColumnDefinition Width="49*" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>

@@ -5,6 +5,7 @@
         BuildColourList = 0,
         ZipArchive,
         UnZipArchive,
+        DeleteFrameImages,
         RenderImage,
         WriteVideoFile
     }

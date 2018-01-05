@@ -199,6 +199,8 @@ namespace BarcodeManager.ViewModels
 
         private void CreateBarcode()
         {
+            // Validation!
+
             // check if the settings directory has changed (been manually typed)
             var tempSettings = FilmBarcodes.Common.Settings.GetSettings();
 

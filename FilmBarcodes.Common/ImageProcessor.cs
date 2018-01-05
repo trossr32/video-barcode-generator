@@ -71,12 +71,14 @@ namespace FilmBarcodes.Common
                     file.Data.Images.Add(videoCollection.Data.Images.First(c => c.Frame == copyFrame));
 
                     graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(file.Data.Colours.Last().Hex)), imageSize);
+
+                    progress.Report(new ProgressWrapper(file.OutputWidth, i+1, ProcessType.RenderImage));
                 }
             }
 
-            bmp.Save(Path.Combine(videoCollection.Config.FullOutputDirectory, file.OutputFilename), ImageFormat.Jpeg);
+            var outputImage = Path.Combine(videoCollection.Config.FullOutputDirectory, file.OutputFilename);
 
-            progress.Report(new ProgressWrapper(videoCollection.Config.Duration, videoCollection.Config.Duration, ProcessType.RenderImage));
+            bmp.Save(outputImage, ImageFormat.Jpeg);
         }
     }
 }
