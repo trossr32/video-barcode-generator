@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BarcodeManager"
              xmlns:converter="clr-namespace:BarcodeManager.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
@@ -114,10 +115,18 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,5" Visibility="{Binding UseExistingFrameImagesVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <ToggleButton VerticalAlignment="Center" IsChecked="{Binding VideoFile.UseExistingFrameImages}" Margin="10,0,10,0" 
-                                      Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" />
-                        <Label>Use existing frame images?</Label>
+                    <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,5">
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleButton VerticalAlignment="Center" IsChecked="{Binding VideoFile.CreateZipAndDeleteFrameImages}" Margin="10,0,10,0" 
+                                          Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" />
+                            <Label>Create zip and delete frame images?</Label>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding UseExistingFrameImagesVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <ToggleButton VerticalAlignment="Center" IsChecked="{Binding VideoFile.UseExistingFrameImages}" Margin="10,0,10,0" 
+                                          Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" />
+                            <Label>Use existing frame images?</Label>
+                        </StackPanel>
                     </StackPanel>
 
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,5">

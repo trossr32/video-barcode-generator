@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models;
@@ -19,27 +20,25 @@ namespace FilmBarcodes.Common
         {
             Directory.CreateDirectory(videoCollection.Config.ImageDirectory);
 
+            // get any image files now to save querying the file system for every image
+            string[] imageFiles = Directory.GetFiles(videoCollection.Config.ImageDirectory);
+
             for (int i = 1; i <= videoCollection.Config.Duration; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var image = $"frame.{i}.jpg";
 
-                videoCollection.Data.Images.Add(new VideoImage
-                {
-                    Frame = i,
-                    Name = image
-                });
-
-                var hex = videoFile.UseExistingFrameImages && File.Exists(Path.Combine(videoCollection.Config.ImageDirectory, image))
+                var hex = videoFile.UseExistingFrameImages && imageFiles.Any(f => f == image)
                     ? ImageProcessor.GetAverageHtmlColourFromImageUsingScale(i, videoCollection)
                     : ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, image, videoCollection);
 
-                videoCollection.Data.Colours.Add(new VideoColour
+                // nreco can fail on the last frame, unsure why at the moment. Maybe duration & frame count mismatch?
+                if (hex != null)
                 {
-                    Frame = i,
-                    Hex = hex
-                });
+                    videoCollection.Data.Images.Add(new VideoImage {Frame = i, Name = image});
+                    videoCollection.Data.Colours.Add(new VideoColour {Frame = i, Hex = hex});
+                }
 
                 progress.Report(new ProgressWrapper(videoCollection.Config.Duration, i, ProcessType.BuildColourList));
             }

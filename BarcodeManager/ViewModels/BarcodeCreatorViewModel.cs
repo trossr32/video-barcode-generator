@@ -114,27 +114,43 @@ namespace BarcodeManager.ViewModels
             };
 
             if (openFileDialog.ShowDialog() == true)
-                BuildVideoCollectionAndVideoFile(openFileDialog.FileNames.First());
+            {
+                if (openFileDialog.FileNames.Length == 1)
+                    BuildVideoCollectionAndVideoFile(openFileDialog.FileNames.First());
+                else
+                    ProcessMultipleFiles(openFileDialog.FileNames);
+            }
+        }
+
+        private void ProcessMultipleFiles(string[] files)
+        {
+            // display 'defaults will be used for all files'
+            // display file list?
+
+            foreach (var file in files)
+            {
+                var videoCollection = CreateVideoCollection(file);
+
+                videoCollection.Config.FullOutputDirectory = Path.Combine(Settings.BarcodeManager.OutputDirectory, videoCollection.Config.OutputDirectory);
+
+                var videoFile = new VideoFile(videoCollection.Config.Duration, file);
+
+                videoFile.FullOutputFile = Path.Combine(videoCollection.Config.FullOutputDirectory, videoFile.OutputFilename);
+
+                if (Directory.Exists(videoCollection.Config.ImageDirectory))
+                {
+                    var fileCount = Directory.GetFiles(videoCollection.Config.ImageDirectory).Length;
+
+                    videoFile.UseExistingFrameImages = fileCount >= videoCollection.Config.Duration - 1 && fileCount <= videoCollection.Config.Duration;
+                }
+
+                _tasksViewModel.AddTask(videoFile, videoCollection);
+            }
         }
 
         private void BuildVideoCollectionAndVideoFile(string file)
         {
-            var videoCollectionFile = Path.Combine(Settings.BarcodeManager.OutputDirectory, Path.GetFileNameWithoutExtension(file), "videocollection.json");
-
-            if (File.Exists(videoCollectionFile))
-            {
-                try
-                {
-                    VideoCollection = JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(videoCollectionFile));
-                }
-                catch (Exception)
-                {
-                    // on failure we want to continue as the video collection file format may have changed
-                }
-            }
-
-            if (VideoCollection == null)
-                VideoCollection = new VideoCollection(file, Settings.BarcodeManager);
+            VideoCollection = CreateVideoCollection(file);
 
             VideoFile = new VideoFile(VideoCollection.Config.Duration, file);
 
@@ -154,6 +170,26 @@ namespace BarcodeManager.ViewModels
             }
             else
                 UseExistingFrameImagesVisible = false;
+        }
+
+        private VideoCollection CreateVideoCollection(string file)
+        {
+            VideoCollection videoCollection = null;
+            var videoCollectionFile = Path.Combine(Settings.BarcodeManager.OutputDirectory, Path.GetFileNameWithoutExtension(file), "videocollection.json");
+
+            if (File.Exists(videoCollectionFile))
+            {
+                try
+                {
+                    videoCollection = JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(videoCollectionFile));
+                }
+                catch (Exception)
+                {
+                    // on failure we want to continue as the video collection file format may have changed
+                }
+            }
+
+            return videoCollection ?? new VideoCollection(file, Settings.BarcodeManager);
         }
 
         private void SetWidthToDuration()
@@ -190,11 +226,12 @@ namespace BarcodeManager.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            var dragFileList = ((DataObject)dropInfo.Data).GetFileDropList().Cast<string>();
+            var dragFileList = ((DataObject)dropInfo.Data).GetFileDropList().Cast<string>().ToArray();
 
-            BuildVideoCollectionAndVideoFile(dragFileList.First());
-
-            //VideoFile = _model.ProcessNewFile(dragFileList.First());
+            if (dragFileList.Length == 1)
+                BuildVideoCollectionAndVideoFile(dragFileList.First());
+            else
+                ProcessMultipleFiles(dragFileList);
         }
 
         private void CreateBarcode()
@@ -215,7 +252,7 @@ namespace BarcodeManager.ViewModels
 
             VideoCollection = null;
             VideoFile = null;
-            UseExistingFrameImagesVisible = false;
+            UseExistingFrameImagesVisible = false; 
         }
         
         private void ChooseSettingsOutputDirectory()

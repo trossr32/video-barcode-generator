@@ -32,6 +32,7 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
         ///   Use this field if the frame images were created successfully but the following steps failed (zip, build & write json)
         /// </summary>
         public bool UseExistingFrameImages { get; set; }
+        public bool CreateZipAndDeleteFrameImages { get; set; }
 
         public VideoData Data { get; set; } = new VideoData();
     }

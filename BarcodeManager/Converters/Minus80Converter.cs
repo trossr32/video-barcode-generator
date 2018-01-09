@@ -4,11 +4,11 @@ using System.Windows.Data;
 
 namespace BarcodeManager.Converters
 {
-    public class Minus10Converter : IValueConverter
+    public class Minus80Converter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double?) value - 10;
+            return (double?) value - 80;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

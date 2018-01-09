@@ -20,7 +20,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" Name="TaskScrollRow" />
                 </Grid.RowDefinitions>
 
                 <materialDesign:ColorZone Grid.Row="0" Margin="0,0,0,30" Padding="16" Mode="PrimaryDark">
@@ -30,80 +30,79 @@
                 </materialDesign:ColorZone>
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" 
-                              Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UIElement}}"
                               Visibility="{Binding TaskListVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding Tasks}" Background="{StaticResource MaterialDesignCardBackground}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type viewModels:TaskProgressViewModel}">
-                            <Border x:Name="Border" Padding="8" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,0,0,1">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition SharedSizeGroup="Checkerz" />
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:TaskProgressViewModel}">
+                                <Border x:Name="Border" Padding="8" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,0,0,1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition SharedSizeGroup="Checkerz" />
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <StackPanel Grid.Column="0">
-                                        <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" Width="32" Height="32"
-                                                                 PlacementMode="LeftAndAlignMiddles" ToggleCheckedContentCommand="{Binding CancelTaskCommand}"
-                                                                 Visibility="{Binding TaskProgressVisibility.RunningVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                                            <materialDesign:PopupBox.ToggleContent>
-                                                <materialDesign:PackIcon Kind="Play" Width="26" Height="26" ToolTip="Running" />
-                                            </materialDesign:PopupBox.ToggleContent>
+                                        <StackPanel Grid.Column="0">
+                                            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" Width="32" Height="32"
+                                                                     PlacementMode="LeftAndAlignMiddles" ToggleCheckedContentCommand="{Binding CancelTaskCommand}"
+                                                                     Visibility="{Binding TaskProgressVisibility.RunningVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <materialDesign:PopupBox.ToggleContent>
+                                                    <materialDesign:PackIcon Kind="Play" Width="26" Height="26" ToolTip="Running" />
+                                                </materialDesign:PopupBox.ToggleContent>
 
-                                            <materialDesign:PopupBox.ToggleCheckedContent>
-                                                    <materialDesign:PackIcon Kind="Close" Width="26" Height="26" ToolTip="Cancel" />
-                                            </materialDesign:PopupBox.ToggleCheckedContent>
-                                        </materialDesign:PopupBox>
+                                                <materialDesign:PopupBox.ToggleCheckedContent>
+                                                        <materialDesign:PackIcon Kind="Close" Width="26" Height="26" ToolTip="Cancel" />
+                                                </materialDesign:PopupBox.ToggleCheckedContent>
+                                            </materialDesign:PopupBox>
 
-                                        <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" Width="32" Height="32"
-                                                                 PlacementMode="LeftAndAlignMiddles" ToggleCheckedContentCommand="{Binding DeleteTaskCommand}"
-                                                                 Visibility="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                                            <materialDesign:PopupBox.ToggleContent>
-                                                <materialDesign:PackIcon Kind="Clock" Width="26" Height="26" ToolTip="Queued" />
-                                            </materialDesign:PopupBox.ToggleContent>
+                                            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" Width="32" Height="32"
+                                                                     PlacementMode="LeftAndAlignMiddles" ToggleCheckedContentCommand="{Binding DeleteTaskCommand}"
+                                                                     Visibility="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <materialDesign:PopupBox.ToggleContent>
+                                                    <materialDesign:PackIcon Kind="Clock" Width="26" Height="26" ToolTip="Queued" />
+                                                </materialDesign:PopupBox.ToggleContent>
 
-                                            <materialDesign:PopupBox.ToggleCheckedContent>
-                                                <materialDesign:PackIcon Kind="Close" Width="26" Height="26" ToolTip="Delete" />
-                                            </materialDesign:PopupBox.ToggleCheckedContent>
-                                        </materialDesign:PopupBox>
+                                                <materialDesign:PopupBox.ToggleCheckedContent>
+                                                    <materialDesign:PackIcon Kind="Close" Width="26" Height="26" ToolTip="Delete" />
+                                                </materialDesign:PopupBox.ToggleCheckedContent>
+                                            </materialDesign:PopupBox>
 
-                                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Success" 
-                                                Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
-                                                Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
-                                                Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                                            <materialDesign:PackIcon Kind="Check"
-                                                                     Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" 
-                                                                     Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" />
-                                        </Button>
+                                            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Success" 
+                                                    Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
+                                                    Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
+                                                    Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <materialDesign:PackIcon Kind="Check"
+                                                                         Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" 
+                                                                         Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" />
+                                            </Button>
                                         
-                                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Failure" Width="32" Height="32" 
-                                                Visibility="{Binding TaskProgressVisibility.FailureVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                                            <materialDesign:PackIcon Width="26" Height="26" Kind="AlertOctagon" />
-                                        </Button>
+                                            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Failure" Width="32" Height="32" 
+                                                    Visibility="{Binding TaskProgressVisibility.FailureVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <materialDesign:PackIcon Width="26" Height="26" Kind="AlertOctagon" />
+                                            </Button>
 
-                                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Cancelled" Width="32" Height="32" 
-                                                Visibility="{Binding TaskProgressVisibility.CancelledVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                                            <materialDesign:PackIcon Width="26" Height="26" Kind="Exclamation" />
-                                        </Button>
-                                    </StackPanel>
+                                            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Cancelled" Width="32" Height="32" 
+                                                    Visibility="{Binding TaskProgressVisibility.CancelledVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <materialDesign:PackIcon Width="26" Height="26" Kind="Exclamation" />
+                                            </Button>
+                                        </StackPanel>
 
-                                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                        <TextBlock FontWeight="Bold" Text="{Binding VideoFile.FileName}" />
-                                        <TextBlock Text="{Binding Elapsed, Converter={StaticResource TimeSpanConverter}}" Margin="0,5,0,0"
-                                                   Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ReverseBoolToVisibilityConverter}}" />
-                                    </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <TextBlock FontWeight="Bold" Text="{Binding VideoFile.FileName}" />
+                                            <TextBlock Text="{Binding Elapsed, Converter={StaticResource TimeSpanConverter}}" Margin="0,5,0,0"
+                                                       Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ReverseBoolToVisibilityConverter}}" />
+                                        </StackPanel>
 
-                                    <StackPanel Grid.Column="2" Margin="20,0,20,0">
-                                        <TextBlock Foreground="{StaticResource MaterialDesignDarkForeground}" Text="{Binding Progress.Status}" HorizontalAlignment="Right" />
-                                        <ProgressBar Height="15" Margin="0,5,0,0" Value="{Binding Progress.Progress}"
-                                                     Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ReverseBoolToVisibilityConverter}}"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                                        <StackPanel Grid.Column="2" Margin="20,0,20,0">
+                                            <TextBlock Foreground="{StaticResource MaterialDesignDarkForeground}" Text="{Binding Progress.Status}" HorizontalAlignment="Right" />
+                                            <ProgressBar Height="15" Margin="0,5,0,0" Value="{Binding Progress.Progress}"
+                                                         Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ReverseBoolToVisibilityConverter}}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </ScrollViewer>
             </Grid>
         </materialDesign:Card>

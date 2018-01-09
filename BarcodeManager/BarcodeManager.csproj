@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -26,7 +27,9 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ProductName>Barcode Manager</ProductName>
+    <PublisherName>Rob Green</PublisherName>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -41,6 +44,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,6 +55,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>0AD5CF997C2ADFAF9B68DE9A7BB44DD83C34D539</ManifestCertificateThumbprint>
@@ -63,9 +70,18 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>barcode_icon-icons.com_73665.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommonServiceLocator, Version=2.0.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommonServiceLocator.2.0.1\lib\net47\CommonServiceLocator.dll</HintPath>
+    <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
     <Reference Include="GongSolutions.Wpf.DragDrop, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\gong-wpf-dragdrop.1.1.0\lib\net46\GongSolutions.Wpf.DragDrop.dll</HintPath>
@@ -169,7 +185,7 @@
     <Compile Include="Converters\ReverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\TimeSpanToStringConverter.cs" />
-    <Compile Include="Converters\Minus10Converter.cs" />
+    <Compile Include="Converters\Minus80Converter.cs" />
     <Compile Include="Models\BarcodeCreatorModel.cs" />
     <Compile Include="ViewModels\CafePressDesignsViewModel.cs" />
     <Compile Include="ViewModels\BarcodeCreatorViewModel.cs" />
@@ -219,6 +235,7 @@
     </EmbeddedResource>
     <None Include="BarcodeManager_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -241,6 +258,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="barcode_icon-icons.com_73665.ico" />
     <Content Include="Data\FilmBarcodes.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -268,5 +286,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\7z.Libs.16.4.0\build\net\7z.Libs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\7z.Libs.16.4.0\build\net\7z.Libs.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.6.1\build\Microsoft.Net.Compilers.props'))" />
   </Target>
 </Project>

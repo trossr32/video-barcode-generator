@@ -153,7 +153,7 @@ namespace BarcodeManager.ViewModels
                 var buildColourListResponse = await Task.Run(() =>
                 {
                     VideoCollection videoCollection = null;
-                    
+
                     try
                     {
                         videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, VideoFile, progress, _cancellationTokenSource.Token);
@@ -164,7 +164,7 @@ namespace BarcodeManager.ViewModels
                     }
                     catch (Exception e)
                     {
-                        return (new TaskResponse { Success = false, Exception = e, Message = $"Unable to create output directory {VideoCollection.Config.FullOutputDirectory}" }, videoCollection);
+                        return (new TaskResponse { Success = false, Exception = e, Message = e.Message }, videoCollection);
                     }
 
                     return (new TaskResponse {Success = true}, videoCollection);
@@ -173,14 +173,17 @@ namespace BarcodeManager.ViewModels
                 if (!buildColourListResponse.Item1.Success)
                     return ProcessUnsuccessfulTaskResponse(buildColourListResponse.Item1);
 
-                VideoCollection = buildColourListResponse.Item2;
-
+                VideoCollection = buildColourListResponse.videoCollection;
+            }
+            
+            if (!File.Exists(VideoCollection.Config.ZipFile) && VideoFile.CreateZipAndDeleteFrameImages)
+            {
                 // archive the frame images and then delete the directory
                 response = await Task.Run(() =>
                 {
                     try
                     {
-                        ZipProcessor.ZipDirectoryAsync(VideoCollection.Config.ImageDirectory, progress, _cancellationTokenSource.Token);
+                        ZipProcessor.ZipDirectoryAsync(VideoCollection.Config, progress, _cancellationTokenSource.Token);
 
                         Directory.Delete(VideoCollection.Config.ImageDirectory, true);
                     }
@@ -193,7 +196,7 @@ namespace BarcodeManager.ViewModels
                         return new TaskResponse { Success = false, Exception = e, Message = "Failed to zip frame images" };
                     }
 
-                    return new TaskResponse { Success = true };
+                    return new TaskResponse {Success = true};
                 });
 
                 if (!response.Success)
@@ -225,7 +228,10 @@ namespace BarcodeManager.ViewModels
             // update the video collection and write as json
             await Task.Run(() =>
             {
-                VideoCollection.VideoFiles.Add(VideoFile);
+                if (VideoCollection.VideoFiles.Any(v => v.OutputWidth == VideoFile.OutputWidth && v.OutputHeight == VideoFile.OutputHeight))
+                    _logger.Warn("VideoFile already exists in VideoCollection, so image render and VideoFile json add will be skipped.");
+                else
+                    VideoCollection.VideoFiles.Add(VideoFile);
 
                 VideoCollection.WriteAsync(progress);
             });
