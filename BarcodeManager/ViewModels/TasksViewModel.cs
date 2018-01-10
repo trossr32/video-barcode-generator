@@ -12,6 +12,7 @@ namespace BarcodeManager.ViewModels
     public class TasksViewModel : ObservableObject
     {
         private readonly Logger _logger;
+        private readonly SettingsWrapper _settings;
         private ObservableCollection<TaskProgressViewModel> _tasks;
         private bool _taskListVisible;
 
@@ -39,6 +40,8 @@ namespace BarcodeManager.ViewModels
         {
             _logger = LogManager.GetCurrentClassLogger();
 
+            _settings = settings;
+
             _tasks = new ObservableCollection<TaskProgressViewModel>();
         }
 
@@ -52,7 +55,7 @@ namespace BarcodeManager.ViewModels
 
             TaskListVisible = true;
 
-            if (Tasks.Any(t => t.State == State.Running))
+            if (Tasks.Count(t => t.State == State.Running) >= _settings.BarcodeManager.NumberOfConcurrentTasks)
                 return;
 
             await RunTask();
@@ -60,10 +63,8 @@ namespace BarcodeManager.ViewModels
 
         private async void TaskComplete()
         {
-            if (Tasks.All(t => t.State != State.Queued))
-                return;
-
-            await RunTask();
+            if (Tasks.Any(t => t.State == State.Queued))
+                await RunTask();
         }
 
         private async Task RunTask()

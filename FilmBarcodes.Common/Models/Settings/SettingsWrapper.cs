@@ -36,6 +36,8 @@ namespace FilmBarcodes.Common.Models.Settings
         public string OutputDirectory { get; set; } = @"Q:\Film Barcodes";
 
         public List<string> AcceptedVideoFiles => new List<string> { "avi", "divx", "m4v", "mkv", "m2ts", "mp4", "mpg", "wmv" };
+
+        public int NumberOfConcurrentTasks => 3;
     }
 
     public class CafePress

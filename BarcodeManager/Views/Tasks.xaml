@@ -67,24 +67,40 @@
                                                 </materialDesign:PopupBox.ToggleCheckedContent>
                                             </materialDesign:PopupBox>
 
-                                            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Success" 
-                                                    Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
-                                                    Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
-                                                    Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                <materialDesign:PackIcon Kind="Check"
-                                                                         Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" 
-                                                                         Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" />
-                                            </Button>
+                                            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" 
+                                                                     Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
+                                                                     Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
+                                                                     PlacementMode="LeftAndAlignMiddles" ToggleCheckedContentCommand="{Binding DeleteTaskCommand}"
+                                                                     Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <materialDesign:PopupBox.ToggleContent>
+                                                    <materialDesign:PackIcon Kind="Check" ToolTip="Success"
+                                                                             Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" 
+                                                                             Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" />
+                                                </materialDesign:PopupBox.ToggleContent>
+
+                                                <materialDesign:PopupBox.ToggleCheckedContent>
+                                                    <materialDesign:PackIcon Kind="Close" ToolTip="Delete"
+                                                                             Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" 
+                                                                             Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" />
+                                                </materialDesign:PopupBox.ToggleCheckedContent>
+                                            </materialDesign:PopupBox>
                                         
                                             <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Failure" Width="32" Height="32" 
                                                     Visibility="{Binding TaskProgressVisibility.FailureVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                                                 <materialDesign:PackIcon Width="26" Height="26" Kind="AlertOctagon" />
                                             </Button>
 
-                                            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" ToolTip="Cancelled" Width="32" Height="32" 
-                                                    Visibility="{Binding TaskProgressVisibility.CancelledVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                <materialDesign:PackIcon Width="26" Height="26" Kind="Exclamation" />
-                                            </Button>
+                                            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" Width="32" Height="32"
+                                                                     PlacementMode="LeftAndAlignMiddles" ToggleCheckedContentCommand="{Binding DeleteTaskCommand}"
+                                                                     Visibility="{Binding TaskProgressVisibility.CancelledVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <materialDesign:PopupBox.ToggleContent>
+                                                    <materialDesign:PackIcon Kind="Exclamation" Width="26" Height="26" ToolTip="Cancelled" />
+                                                </materialDesign:PopupBox.ToggleContent>
+
+                                                <materialDesign:PopupBox.ToggleCheckedContent>
+                                                    <materialDesign:PackIcon Kind="Close" Width="26" Height="26" ToolTip="Delete" />
+                                                </materialDesign:PopupBox.ToggleCheckedContent>
+                                            </materialDesign:PopupBox>
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1" Margin="8,0,0,0">

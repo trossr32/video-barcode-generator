@@ -117,6 +117,8 @@ namespace BarcodeManager.ViewModels
 
             State = State.Running;
 
+            RaiseTaskResponsePropertyChangedEvents();
+
             StartTimer();
 
             // set up the progress control
