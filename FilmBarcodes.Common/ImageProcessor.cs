@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -56,12 +57,10 @@ namespace FilmBarcodes.Common
 
         public static void RenderImageAsync(VideoCollection videoCollection, VideoFile file, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
-            var outputImage = Path.Combine(videoCollection.Config.FullOutputDirectory, file.OutputFilename);
-
-            if (File.Exists(outputImage))
+            if (File.Exists(file.StandardImage.FullOutputFile))
             {
                 _logger = LogManager.GetCurrentClassLogger();
-                _logger.Warn($"Image {outputImage} already exists, skipping image creation");
+                _logger.Warn($"Image {file.StandardImage.FullOutputFile} already exists, skipping image creation");
 
                 return;
             }
@@ -88,11 +87,82 @@ namespace FilmBarcodes.Common
 
                     graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(file.Data.Colours.Last().Hex)), imageSize);
 
-                    progress.Report(new ProgressWrapper(file.OutputWidth, i+1, ProcessType.RenderImage));
+                    progress.Report(new ProgressWrapper(file.OutputWidth, i + 1, ProcessType.RenderImage));
                 }
             }
+
+            bmp.Save(file.StandardImage.FullOutputFile, ImageFormat.Jpeg);
+        }
+
+        //public static void GetImageCompressedToOnePixelWide(int frame, VideoCollection videoCollection)
+        //{
+        //    var file = $"frame.{frame}.jpg";
+
+        //    ProcessImageCompressedToOnePixelWide(file, videoCollection);
+        //}
+
+        //public static void BuildImageCompressedToOnePixelWide(VideoCollection videoCollection, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
+        //{
+        //    foreach (var frame in videoCollection.Data.Images)
+        //    {
+        //        cancellationToken.ThrowIfCancellationRequested();
+
+        //        ProcessImageCompressedToOnePixelWide(frame.Name, videoCollection);
+
+        //        progress.Report(new ProgressWrapper(videoCollection.Data.Images.Count, frame.Frame, ProcessType.BuildOnePixelImage));
+        //    }
+        //}
+
+        //private static void ProcessImageCompressedToOnePixelWide(string file, VideoCollection videoCollection)
+        //{
+        //    using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.ImageDirectory, file)))
+        //    {
+        //        // Resize the image to a fixed size without maintaining the aspect ratio (normally an image will be resized to fit inside the specified size)
+        //        image.Resize(new MagickGeometry(1, image.Height) { IgnoreAspectRatio = true });
+
+        //        image.Write(Path.Combine(videoCollection.Config.OnePixelImageDirectory, file));
+        //    }
+        //}
+
+        public static void BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection videoCollection, VideoFile file, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
+        {
+            Directory.CreateDirectory(videoCollection.Config.OnePixelImageDirectory);
+
+            if (File.Exists(file.CompressedOnePixelImage.FullOutputFile))
+            {
+                _logger = LogManager.GetCurrentClassLogger();
+                _logger.Warn($"Image {file.CompressedOnePixelImage.FullOutputFile} already exists, skipping image creation");
+
+                return;
+            }
             
-            bmp.Save(outputImage, ImageFormat.Jpeg);
+            using (MagickImageCollection images = new MagickImageCollection())
+            {
+                for (var i = 0; i < videoCollection.Data.Images.Count; i++)
+                {
+                    var frame = videoCollection.Data.Images[i];
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.ImageDirectory, frame.Name)))
+                    {
+                        // Resize the image to a fixed size without maintaining the aspect ratio (normally an image will be resized to fit inside the specified size)
+                        image.Resize(new MagickGeometry(1, file.OutputHeight) { IgnoreAspectRatio = true });
+                        image.Page = new MagickGeometry(i * 1, 0, 0, 0);
+
+                        image.Write(Path.Combine(videoCollection.Config.OnePixelImageDirectory, frame.Name));
+
+                        images.Add(image.Clone());
+                    }
+
+                    progress.Report(new ProgressWrapper(videoCollection.Data.Images.Count, frame.Frame, ProcessType.RenderImageCompressedToOnePixelWide));
+                }
+
+                using (IMagickImage result = images.Mosaic())
+                {
+                    result.Write(file.CompressedOnePixelImage.FullOutputFile);
+                }
+            }
         }
     }
 }

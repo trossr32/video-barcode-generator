@@ -136,7 +136,7 @@ namespace BarcodeManager.ViewModels
 
                 var videoFile = new VideoFile(videoCollection.Config.Duration, file);
 
-                videoFile.FullOutputFile = Path.Combine(videoCollection.Config.FullOutputDirectory, videoFile.OutputFilename);
+                videoFile.SetOutputImagesFullDirectory(videoCollection);
 
                 if (Directory.Exists(videoCollection.Config.ImageDirectory))
                 {
@@ -162,8 +162,7 @@ namespace BarcodeManager.ViewModels
                 var fileCount = Directory.GetFiles(VideoCollection.Config.ImageDirectory).Length;
 
                 // frame image count tends to be 1 less than duration seconds (rounding or for index error?)
-                UseExistingFrameImagesVisible = fileCount >= VideoCollection.Config.Duration - 1 &&
-                                                fileCount <= VideoCollection.Config.Duration;
+                UseExistingFrameImagesVisible = fileCount >= VideoCollection.Config.Duration - 1 && fileCount <= VideoCollection.Config.Duration;
 
                 VideoFile.UseExistingFrameImages = true;
 
@@ -247,7 +246,7 @@ namespace BarcodeManager.ViewModels
             
             VideoCollection.Config.FullOutputDirectory = Path.Combine(Settings.BarcodeManager.OutputDirectory, VideoCollection.Config.OutputDirectory);
 
-            VideoFile.FullOutputFile = Path.Combine(VideoCollection.Config.FullOutputDirectory, VideoFile.OutputFilename);
+            VideoFile.SetOutputImagesFullDirectory(VideoCollection);
 
             _tasksViewModel.AddTask(VideoFile, VideoCollection);
 

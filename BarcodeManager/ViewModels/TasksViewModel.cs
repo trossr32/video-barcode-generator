@@ -49,7 +49,7 @@ namespace BarcodeManager.ViewModels
         {
             int taskId = Tasks.Any() ? Tasks.Max(t => t.Id) + 1 : 1;
 
-            _logger.Info($"Creating task id:{taskId}, {videoFile.FilenameWithoutExtension}");
+            _logger.Info($"Creating task id:{taskId}, {videoFile.VideoFilenameWithoutExtension}");
             
             Tasks.Add(new TaskProgressViewModel(this, videoFile, videoCollection, taskId));
 

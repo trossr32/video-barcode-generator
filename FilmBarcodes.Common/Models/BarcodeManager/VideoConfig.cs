@@ -56,6 +56,7 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
         public string OutputDirectory { get; set; }
         public string FullOutputDirectory { get; set; }
         public string ImageDirectory => Path.Combine(FullOutputDirectory, "frame images");
+        public string OnePixelImageDirectory => Path.Combine(ImageDirectory, "one pixel frame images");
         public string ZipFile => Path.Combine(FullOutputDirectory, "frame images.zip");
 
         public bool IsValid { get; set; }

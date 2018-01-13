@@ -113,7 +113,7 @@ namespace BarcodeManager.ViewModels
 
         public async Task<State> RunTask()
         {
-            _logger.Info($"Running task id:{Id}, {VideoFile.FilenameWithoutExtension}");
+            _logger.Info($"Running task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}");
 
             State = State.Running;
 
@@ -162,7 +162,7 @@ namespace BarcodeManager.ViewModels
                     }
                     catch (OperationCanceledException)
                     {
-                        return (new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.FilenameWithoutExtension}" }, videoCollection);
+                        return (new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}" }, videoCollection);
                     }
                     catch (Exception e)
                     {
@@ -177,10 +177,10 @@ namespace BarcodeManager.ViewModels
 
                 VideoCollection = buildColourListResponse.videoCollection;
             }
-            
+
+            // if required, archive the frame images and then delete the directory
             if (!File.Exists(VideoCollection.Config.ZipFile) && VideoFile.CreateZipAndDeleteFrameImages)
             {
-                // archive the frame images and then delete the directory
                 response = await Task.Run(() =>
                 {
                     try
@@ -191,7 +191,7 @@ namespace BarcodeManager.ViewModels
                     }
                     catch (OperationCanceledException)
                     {
-                        return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.FilenameWithoutExtension}" };
+                        return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}" };
                     }
                     catch (Exception e)
                     {
@@ -214,11 +214,11 @@ namespace BarcodeManager.ViewModels
                 }
                 catch (OperationCanceledException)
                 {
-                    return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.FilenameWithoutExtension}" };
+                    return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}" };
                 }
                 catch (Exception e)
                 {
-                    return new TaskResponse { Success = false, Exception = e, Message = $"Failed whilst rendering final image {VideoFile.OutputFilename}" };
+                    return new TaskResponse { Success = false, Exception = e, Message = $"Failed whilst rendering final image {VideoFile.StandardImage.FullOutputFile}" };
                 }
 
                 return new TaskResponse { Success = true };
@@ -227,13 +227,38 @@ namespace BarcodeManager.ViewModels
             if (!response.Success)
                 return ProcessUnsuccessfulTaskResponse(response);
 
+            // if required, render the compressed one pixel image
+            if (VideoFile.CreateOnePixelBarcode)
+            { 
+                response = await Task.Run(() =>
+                {
+                    try
+                    {
+                        ImageProcessor.BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection, VideoFile, progress, _cancellationTokenSource.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}" };
+                    }
+                    catch (Exception e)
+                    {
+                        return new TaskResponse { Success = false, Exception = e, Message = $"Failed whilst rendering final image {VideoFile.CompressedOnePixelImage.FullOutputFile}" };
+                    }
+
+                    return new TaskResponse { Success = true };
+                });
+
+                if (!response.Success)
+                    return ProcessUnsuccessfulTaskResponse(response);
+            }
+
             // update the video collection and write as json
             await Task.Run(() =>
             {
                 if (VideoCollection.VideoFiles.Any(v => v.OutputWidth == VideoFile.OutputWidth && v.OutputHeight == VideoFile.OutputHeight))
-                    _logger.Warn("VideoFile already exists in VideoCollection, so image render and VideoFile json add will be skipped.");
-                else
-                    VideoCollection.VideoFiles.Add(VideoFile);
+                    VideoCollection.VideoFiles.Remove(VideoCollection.VideoFiles.First(v => v.OutputWidth == VideoFile.OutputWidth && v.OutputHeight == VideoFile.OutputHeight));
+
+                VideoCollection.VideoFiles.Add(VideoFile);
 
                 VideoCollection.WriteAsync(progress);
             });

@@ -78,12 +78,14 @@
     <Compile Include="CacheService.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Enums\ApiCallType.cs" />
+    <Compile Include="Enums\OutputImageType.cs" />
     <Compile Include="Enums\TabType.cs" />
     <Compile Include="Enums\ProcessType.cs" />
     <Compile Include="Enums\State.cs" />
     <Compile Include="Helpers\Url.cs" />
     <Compile Include="Helpers\Xml.cs" />
     <Compile Include="ImageProcessor.cs" />
+    <Compile Include="Models\BarcodeManager\OutputImage.cs" />
     <Compile Include="Models\BarcodeManager\TaskProgressVisibility.cs" />
     <Compile Include="Models\BarcodeManager\VideoCollection.cs" />
     <Compile Include="Models\BarcodeManager\VideoImage.cs" />

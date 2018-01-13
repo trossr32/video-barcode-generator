@@ -85,7 +85,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0,0,0,5">File name:</TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoFile.FileName}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoFile.VideoFileName}" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0,0,0,5">Location:</TextBlock>
                             <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoCollection.Config.FilePath}" />
@@ -121,11 +121,17 @@
                                           Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" />
                             <Label>Create zip and delete frame images?</Label>
                         </StackPanel>
-                        
+
                         <StackPanel Orientation="Horizontal" Visibility="{Binding UseExistingFrameImagesVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                             <ToggleButton VerticalAlignment="Center" IsChecked="{Binding VideoFile.UseExistingFrameImages}" Margin="10,0,10,0" 
                                           Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" />
                             <Label>Use existing frame images?</Label>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding UseExistingFrameImagesVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <ToggleButton VerticalAlignment="Center" IsChecked="{Binding VideoFile.CreateOnePixelBarcode}" Margin="10,0,10,0" 
+                                          Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" />
+                            <Label>Create compressed one pixel barcode?</Label>
                         </StackPanel>
                     </StackPanel>
 
@@ -233,13 +239,13 @@
                                                 <RowDefinition Height="*" />
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
-                                            <Image Width="296" Height="70" Source="{Binding FullOutputFile}" Stretch="UniformToFill" />
+                                            <Image Width="296" Height="70" Source="{Binding StandardImageFullOutputFile}" Stretch="UniformToFill" />
                                             <Button Grid.Row="0" Margin="0,0,16,-20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}">
                                                 <materialDesign:PackIcon Kind="Folder" />
                                             </Button>
                                             <StackPanel Grid.Row="1" Margin="10,24,10,10">
-                                                <TextBlock FontWeight="Bold" Text="{Binding OutputFilename}" />
-                                                <TextBlock TextWrapping="Wrap" Text="{Binding OutputFilename}" />
+                                                <TextBlock FontWeight="Bold" Text="{Binding StandardImageOutputFilename}" />
+                                                <TextBlock TextWrapping="Wrap" Text="{Binding StandardImageOutputFilename}" />
                                             </StackPanel>
                                         </Grid>
                                     </materialDesign:Card>

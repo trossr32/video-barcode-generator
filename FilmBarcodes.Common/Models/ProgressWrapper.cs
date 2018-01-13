@@ -24,6 +24,7 @@ namespace FilmBarcodes.Common.Models
                     Status = "Deleting frame images directory...";
                     break;
                 case ProcessType.RenderImage:
+                case ProcessType.RenderImageCompressedToOnePixelWide:
                     Progress = (int)Math.Round(currentProgress / (double)totalProgress * 100);
                     Status = $"Rendering image frame: {currentProgress} of {totalProgress}";
                     break;

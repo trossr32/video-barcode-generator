@@ -119,8 +119,8 @@
                                             </Grid.ColumnDefinitions>
                                             <ToggleButton VerticalAlignment="Center" Content="x" Style="{StaticResource MaterialDesignActionLightToggleButton}" />
                                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                                <TextBlock FontWeight="Bold" Text="{Binding FileName}" />
-                                                <TextBlock Text="{Binding FilenameWithoutExtension}" />
+                                                <TextBlock FontWeight="Bold" Text="{Binding VideoFileName}" />
+                                                <TextBlock Text="{Binding VideoFilenameWithoutExtension}" />
                                             </StackPanel>
                                         </Grid>
                                     </Border>
