@@ -54,6 +54,11 @@ namespace BarcodeManager.Views
             SetTab(TabType.Designs);
         }
 
+        private void MenuVideoLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            SetTab(TabType.VideoLibrary);
+        }
+
         private void SetTab(TabType tab)
         {
             switch (tab)
@@ -65,6 +70,9 @@ namespace BarcodeManager.Views
                     ContentArea.Content = _barcodeCreatorParent;
                     break;
                 case TabType.Designs:
+                    ContentArea.Content = _cafePressDesigns;
+                    break;
+                case TabType.VideoLibrary:
                     ContentArea.Content = _cafePressDesigns;
                     break;
             }

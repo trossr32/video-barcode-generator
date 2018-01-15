@@ -5,6 +5,7 @@
         Home = 0,
         Create,
         Tasks,
-        Designs
+        Designs,
+        VideoLibrary
     }
 }

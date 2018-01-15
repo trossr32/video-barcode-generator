@@ -152,6 +152,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\VideoLibrary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\BarcodeCreatorParent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -191,9 +195,13 @@
     <Compile Include="ViewModels\BarcodeCreatorViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\CreateStoreDialogViewModel.cs" />
     <Compile Include="ViewModels\TaskProgressViewModel.cs" />
+    <Compile Include="ViewModels\VideoLibraryViewModel.cs" />
     <Compile Include="ViewModels\TasksViewModel.cs" />
     <Compile Include="Views\BarcodeCreator.xaml.cs">
       <DependentUpon>BarcodeCreator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VideoLibrary.xaml.cs">
+      <DependentUpon>VideoLibrary.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\BarcodeCreatorParent.xaml.cs">
       <DependentUpon>BarcodeCreatorParent.xaml</DependentUpon>
@@ -258,8 +266,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="barcode_icon-icons.com_73665.ico" />
-    <Resource Include="Assets\barcode_icon-icons.com_73665.ico" />
     <Resource Include="Assets\barcodemanager.ico" />
     <Resource Include="barcodemanager.ico" />
     <Content Include="Data\FilmBarcodes.mdf">

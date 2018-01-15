@@ -82,6 +82,7 @@
     <Compile Include="Enums\TabType.cs" />
     <Compile Include="Enums\ProcessType.cs" />
     <Compile Include="Enums\State.cs" />
+    <Compile Include="Enums\VideoLibraryFilter.cs" />
     <Compile Include="Helpers\Url.cs" />
     <Compile Include="Helpers\Xml.cs" />
     <Compile Include="ImageProcessor.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Models\BarcodeManager\VideoData.cs" />
     <Compile Include="Models\BarcodeManager\VideoConfig.cs" />
     <Compile Include="Models\BarcodeManager\VideoFile.cs" />
+    <Compile Include="Models\BarcodeManager\VideoLibraryItem.cs" />
     <Compile Include="Models\CafePress\Color.cs" />
     <Compile Include="Models\CafePress\Design.cs" />
     <Compile Include="Models\CafePress\Folder.cs" />
