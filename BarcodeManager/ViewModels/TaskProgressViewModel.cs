@@ -23,7 +23,8 @@ namespace BarcodeManager.ViewModels
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         private State _state;
-        private VideoFile _videoFile;
+        private VideoCollection _videoCollection;
+        private BarcodeConfig _barcodeConfig;
         private TimeSpan _elapsed;
         private DispatcherTimer _timer;
         private Stopwatch _stopWatch;
@@ -47,17 +48,27 @@ namespace BarcodeManager.ViewModels
             }
         }
 
-        private VideoCollection VideoCollection { get; set; }
-
-        public VideoFile VideoFile
+        public VideoCollection VideoCollection
         {
-            get => _videoFile;
+            get => _videoCollection;
             set
             {
-                //if (_videoFile == value) return;
-                _videoFile = value;
+                //if (_barcodeConfig == value) return;
+                _videoCollection = value;
+
+                RaisePropertyChangedEvent("VideoCollection");
+            }
+        }
+
+        public BarcodeConfig BarcodeConfig
+        {
+            get => _barcodeConfig;
+            set
+            {
+                //if (_barcodeConfig == value) return;
+                _barcodeConfig = value;
                 
-                RaisePropertyChangedEvent("VideoFile");
+                RaisePropertyChangedEvent("BarcodeConfig");
             }
         }
 
@@ -99,12 +110,12 @@ namespace BarcodeManager.ViewModels
         public ICommand CancelTaskCommand => new DelegateCommand(CancelTask);
         public ICommand DeleteTaskCommand => new DelegateCommand(DeleteTask);
 
-        public TaskProgressViewModel(TasksViewModel parent, VideoFile videoFile, VideoCollection videoCollection, int id)
+        public TaskProgressViewModel(TasksViewModel parent, BarcodeConfig barcodeConfig, VideoCollection videoCollection, int id)
         {
             _parent = parent;
             _logger = LogManager.GetCurrentClassLogger();
 
-            VideoFile = videoFile;
+            BarcodeConfig = barcodeConfig;
             VideoCollection = videoCollection;
             Id = id;
             State = State.Queued;
@@ -113,7 +124,7 @@ namespace BarcodeManager.ViewModels
 
         public async Task<State> RunTask()
         {
-            _logger.Info($"Running task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}");
+            _logger.Info($"Running task id:{Id}, {VideoCollection.Config.FilenameWithoutExtension}");
 
             State = State.Running;
 
@@ -158,11 +169,11 @@ namespace BarcodeManager.ViewModels
 
                     try
                     {
-                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, VideoFile, progress, _cancellationTokenSource.Token);
+                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, BarcodeConfig, progress, _cancellationTokenSource.Token);
                     }
                     catch (OperationCanceledException)
                     {
-                        return (new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}" }, videoCollection);
+                        return (new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoCollection.Config.FilenameWithoutExtension}" }, videoCollection);
                     }
                     catch (Exception e)
                     {
@@ -179,7 +190,7 @@ namespace BarcodeManager.ViewModels
             }
 
             // if required, archive the frame images and then delete the directory
-            if (!File.Exists(VideoCollection.Config.ZipFile) && VideoFile.CreateZipAndDeleteFrameImages)
+            if (!File.Exists(VideoCollection.Config.ZipFile) && BarcodeConfig.CreateZipAndDeleteFrameImages)
             {
                 response = await Task.Run(() =>
                 {
@@ -191,7 +202,7 @@ namespace BarcodeManager.ViewModels
                     }
                     catch (OperationCanceledException)
                     {
-                        return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}" };
+                        return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoCollection.Config.FilenameWithoutExtension}" };
                     }
                     catch (Exception e)
                     {
@@ -210,15 +221,15 @@ namespace BarcodeManager.ViewModels
             {
                 try
                 {
-                    ImageProcessor.RenderImageAsync(VideoCollection, VideoFile, progress, _cancellationTokenSource.Token);
+                    ImageProcessor.RenderImageAsync(VideoCollection, BarcodeConfig, progress, _cancellationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
                 {
-                    return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}" };
+                    return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoCollection.Config.FilenameWithoutExtension}" };
                 }
                 catch (Exception e)
                 {
-                    return new TaskResponse { Success = false, Exception = e, Message = $"Failed whilst rendering final image {VideoFile.StandardImage.FullOutputFile}" };
+                    return new TaskResponse { Success = false, Exception = e, Message = $"Failed whilst rendering final image {BarcodeConfig.Barcode_Standard.FullOutputFile}" };
                 }
 
                 return new TaskResponse { Success = true };
@@ -228,21 +239,21 @@ namespace BarcodeManager.ViewModels
                 return ProcessUnsuccessfulTaskResponse(response);
 
             // if required, render the compressed one pixel image
-            if (VideoFile.CreateOnePixelBarcode)
+            if (BarcodeConfig.CreateOnePixelBarcode)
             { 
                 response = await Task.Run(() =>
                 {
                     try
                     {
-                        ImageProcessor.BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection, VideoFile, progress, _cancellationTokenSource.Token);
+                        ImageProcessor.BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection, BarcodeConfig, progress, _cancellationTokenSource.Token);
                     }
                     catch (OperationCanceledException)
                     {
-                        return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoFile.VideoFilenameWithoutExtension}" };
+                        return new TaskResponse { Success = false, Cancelled = true, Message = $"Cancelled task id:{Id}, {VideoCollection.Config.FilenameWithoutExtension}" };
                     }
                     catch (Exception e)
                     {
-                        return new TaskResponse { Success = false, Exception = e, Message = $"Failed whilst rendering final image {VideoFile.CompressedOnePixelImage.FullOutputFile}" };
+                        return new TaskResponse { Success = false, Exception = e, Message = $"Failed whilst rendering final image {BarcodeConfig.Barcode_1px.FullOutputFile}" };
                     }
 
                     return new TaskResponse { Success = true };
@@ -255,10 +266,10 @@ namespace BarcodeManager.ViewModels
             // update the video collection and write as json
             await Task.Run(() =>
             {
-                if (VideoCollection.VideoFiles.Any(v => v.OutputWidth == VideoFile.OutputWidth && v.OutputHeight == VideoFile.OutputHeight))
-                    VideoCollection.VideoFiles.Remove(VideoCollection.VideoFiles.First(v => v.OutputWidth == VideoFile.OutputWidth && v.OutputHeight == VideoFile.OutputHeight));
+                if (VideoCollection.BarcodeConfigs.Any(v => v.OutputWidth == BarcodeConfig.OutputWidth && v.OutputHeight == BarcodeConfig.OutputHeight))
+                    VideoCollection.BarcodeConfigs.Remove(VideoCollection.BarcodeConfigs.First(v => v.OutputWidth == BarcodeConfig.OutputWidth && v.OutputHeight == BarcodeConfig.OutputHeight));
 
-                VideoCollection.VideoFiles.Add(VideoFile);
+                VideoCollection.BarcodeConfigs.Add(BarcodeConfig);
 
                 VideoCollection.WriteAsync(progress);
             });

@@ -104,7 +104,7 @@
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                            <TextBlock FontWeight="Bold" Text="{Binding VideoFile.VideoFileName}" />
+                                            <TextBlock FontWeight="Bold" Text="{Binding VideoCollection.Config.FileName}" />
                                             <TextBlock Text="{Binding Elapsed, Converter={StaticResource TimeSpanConverter}}" Margin="0,5,0,0"
                                                        Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ReverseBoolToVisibilityConverter}}" />
                                         </StackPanel>

@@ -45,11 +45,11 @@ namespace BarcodeManager.ViewModels
             _tasks = new ObservableCollection<TaskProgressViewModel>();
         }
 
-        public async void AddTask(VideoFile videoFile, VideoCollection videoCollection)
+        public async void AddTask(BarcodeConfig videoFile, VideoCollection videoCollection)
         {
             int taskId = Tasks.Any() ? Tasks.Max(t => t.Id) + 1 : 1;
 
-            _logger.Info($"Creating task id:{taskId}, {videoFile.VideoFilenameWithoutExtension}");
+            _logger.Info($"Creating task id:{taskId}, {videoCollection.Config.FilenameWithoutExtension}");
             
             Tasks.Add(new TaskProgressViewModel(this, videoFile, videoCollection, taskId));
 

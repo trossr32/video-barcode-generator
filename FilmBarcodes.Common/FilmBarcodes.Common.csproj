@@ -86,6 +86,15 @@
     <Compile Include="Helpers\Url.cs" />
     <Compile Include="Helpers\Xml.cs" />
     <Compile Include="ImageProcessor.cs" />
+    <Compile Include="Models\BarcodeManagerOld\OutputImage.cs" />
+    <Compile Include="Models\BarcodeManagerOld\TaskProgressVisibility.cs" />
+    <Compile Include="Models\BarcodeManagerOld\VideoCollection.cs" />
+    <Compile Include="Models\BarcodeManagerOld\VideoColour.cs" />
+    <Compile Include="Models\BarcodeManagerOld\VideoConfig.cs" />
+    <Compile Include="Models\BarcodeManagerOld\VideoData.cs" />
+    <Compile Include="Models\BarcodeManagerOld\VideoFile.cs" />
+    <Compile Include="Models\BarcodeManagerOld\VideoImage.cs" />
+    <Compile Include="Models\BarcodeManagerOld\VideoLibraryItem.cs" />
     <Compile Include="Models\BarcodeManager\OutputImage.cs" />
     <Compile Include="Models\BarcodeManager\TaskProgressVisibility.cs" />
     <Compile Include="Models\BarcodeManager\VideoCollection.cs" />
@@ -93,7 +102,7 @@
     <Compile Include="Models\BarcodeManager\VideoColour.cs" />
     <Compile Include="Models\BarcodeManager\VideoData.cs" />
     <Compile Include="Models\BarcodeManager\VideoConfig.cs" />
-    <Compile Include="Models\BarcodeManager\VideoFile.cs" />
+    <Compile Include="Models\BarcodeManager\BarcodeConfig.cs" />
     <Compile Include="Models\BarcodeManager\VideoLibraryItem.cs" />
     <Compile Include="Models\CafePress\Color.cs" />
     <Compile Include="Models\CafePress\Design.cs" />

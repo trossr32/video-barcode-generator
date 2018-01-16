@@ -2,9 +2,9 @@
 {
     public class BarcodeCreatorModel
     {
-        //public VideoFile ProcessNewFile(string file)
+        //public BarcodeConfig ProcessNewFile(string file)
         //{
-        //    var v = new VideoFile(file);
+        //    var v = new BarcodeConfig(file);
 
             
 

@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BarcodeManager"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:BarcodeManager.ViewModels"
              mc:Ignorable="d" Height="Auto"
@@ -108,7 +107,7 @@
                     </ScrollViewer>
 
                     <ScrollViewer Grid.Row="0" Grid.Column="1" VerticalScrollBarVisibility="Auto" Height="Auto">
-                        <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding LocalVideoFiles}">
+                        <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding VideoCollection.BarcodeConfigs}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border x:Name="Border" Padding="8" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,0,0,1">
@@ -119,8 +118,8 @@
                                             </Grid.ColumnDefinitions>
                                             <ToggleButton VerticalAlignment="Center" Content="x" Style="{StaticResource MaterialDesignActionLightToggleButton}" />
                                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                                <TextBlock FontWeight="Bold" Text="{Binding VideoFileName}" />
-                                                <TextBlock Text="{Binding VideoFilenameWithoutExtension}" />
+                                                <!--<TextBlock FontWeight="Bold" Text="{Binding VideoCollection.}" />
+                                                <TextBlock Text="{Binding VideoFilenameWithoutExtension}" />-->
                                             </StackPanel>
                                         </Grid>
                                     </Border>

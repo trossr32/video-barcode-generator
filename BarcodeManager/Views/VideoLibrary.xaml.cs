@@ -9,19 +9,11 @@ namespace BarcodeManager.Views
     /// </summary>
     public partial class VideoLibrary : UserControl
     {
-        private Views.BarcodeCreator _barcodeCreator;
-        private Tasks _tasks;
-
         public VideoLibrary(SettingsWrapper settings)
         {
             InitializeComponent();
 
-            _tasks = new Tasks(settings);
-
-            _barcodeCreator = new BarcodeCreator((TasksViewModel)_tasks.DataContext, settings);
-
-            BarcodeCreatorContent.Content = _barcodeCreator;
-            TasksContent.Content = _tasks;
+            DataContext = new VideoLibraryViewModel(settings);
         }
     }
 }

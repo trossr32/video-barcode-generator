@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using NReco.VideoInfo;
 
-namespace FilmBarcodes.Common.Models.BarcodeManager
+namespace FilmBarcodes.Common.Models.BarcodeManagerOld
 {
     public class VideoConfig
     {
@@ -49,13 +49,12 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
 
         public string FullPath { get; set; }
         public string FileName => FullPath.Split('\\').Last();
-        public string FilenameWithoutExtension => Path.GetFileNameWithoutExtension(FileName);
         public string FilePath => FullPath.Replace(FileName, "");
 
         public string OutputDirectory { get; set; }
         public string FullOutputDirectory { get; set; }
         public string ImageDirectory => Path.Combine(FullOutputDirectory, "frame images");
-        public string OnePixelImageDirectory => Path.Combine(FullOutputDirectory, "one pixel frame images");
+        public string OnePixelImageDirectory => Path.Combine(ImageDirectory, "one pixel frame images");
         public string ZipFile => Path.Combine(FullOutputDirectory, "frame images.zip");
 
         public bool IsValid { get; set; }

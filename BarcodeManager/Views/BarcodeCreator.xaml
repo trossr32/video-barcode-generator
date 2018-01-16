@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BarcodeManager"
              xmlns:converter="clr-namespace:BarcodeManager.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
@@ -85,7 +84,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0,0,0,5">File name:</TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoFile.VideoFileName}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoCollection.Config.FileName}" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0,0,0,5">Location:</TextBlock>
                             <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,10,0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding VideoCollection.Config.FilePath}" />
@@ -222,8 +221,7 @@
                     </Grid.RowDefinitions>
 
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Height="310">
-                        <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding VideoCollection.VideoFiles}" 
-                                      Background="{StaticResource MaterialDesignCardBackground}">
+                        <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding VideoCollection.BarcodeConfigs}" Background="{StaticResource MaterialDesignCardBackground}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal"/>
@@ -231,24 +229,44 @@
                             </ItemsControl.ItemsPanel>
 
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type barcodeManager:VideoFile}">
-                                    <materialDesign:Card Width="300" Margin="10,0" materialDesign:ShadowAssist.ShadowDepth="Depth4">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <Image Width="296" Height="70" Source="{Binding StandardImageFullOutputFile}" Stretch="UniformToFill" />
-                                            <Button Grid.Row="0" Margin="0,0,16,-20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}">
-                                                <materialDesign:PackIcon Kind="Folder" />
-                                            </Button>
-                                            <StackPanel Grid.Row="1" Margin="10,24,10,10">
-                                                <TextBlock FontWeight="Bold" Text="{Binding StandardImageOutputFilename}" />
-                                                <TextBlock TextWrapping="Wrap" Text="{Binding StandardImageOutputFilename}" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </materialDesign:Card>
+                                <DataTemplate DataType="{x:Type barcodeManager:BarcodeConfig}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:Card Width="300" Margin="10,0" materialDesign:ShadowAssist.ShadowDepth="Depth4">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="*" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Image Width="296" Height="70" Source="{Binding Barcode_Standard.FullOutputFile}" Stretch="UniformToFill" />
+                                                <Button Grid.Row="0" Margin="0,0,16,-20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}">
+                                                    <materialDesign:PackIcon Kind="Folder" />
+                                                </Button>
+                                                <StackPanel Grid.Row="1" Margin="10,24,10,10">
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Barcode_Standard.OutputFilename}" />
+                                                    <TextBlock TextWrapping="Wrap" Text="{Binding Barcode_Standard.OutputFilename}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </materialDesign:Card>
+
+                                        <materialDesign:Card Width="300" Margin="10,0" materialDesign:ShadowAssist.ShadowDepth="Depth4">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="*" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Image Width="296" Height="70" Source="{Binding Barcode_1px.FullOutputFile}" Stretch="UniformToFill" />
+                                                <Button Grid.Row="0" Margin="0,0,16,-20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}">
+                                                    <materialDesign:PackIcon Kind="Folder" />
+                                                </Button>
+                                                <StackPanel Grid.Row="1" Margin="10,24,10,10">
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Barcode_1px.OutputFilename}" />
+                                                    <TextBlock TextWrapping="Wrap" Text="{Binding Barcode_1px.OutputFilename}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </materialDesign:Card>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

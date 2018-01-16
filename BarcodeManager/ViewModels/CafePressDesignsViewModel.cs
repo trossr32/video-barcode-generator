@@ -18,7 +18,7 @@ namespace BarcodeManager.ViewModels
     {
         private StoreMethods _storeMethods;
         private DesignMethods _designMethods;
-        private List<VideoFile> _localVideoFiles;
+        private VideoCollection _videoCollection;
 
         private SettingsWrapper _settings;
         private Stores _stores;
@@ -89,14 +89,15 @@ namespace BarcodeManager.ViewModels
             }
         }
 
-        public List<VideoFile> LocalVideoFiles
+        public VideoCollection VideoCollection
         {
-            get => _localVideoFiles;
+            get => _videoCollection;
             set
             {
-                _localVideoFiles = value;
+                //if (_barcodeConfig == value) return;
+                _videoCollection = value;
 
-                RaisePropertyChangedEvent("LocalVideoFiles");
+                RaisePropertyChangedEvent("VideoCollection");
             }
         }
 
@@ -130,8 +131,6 @@ namespace BarcodeManager.ViewModels
 
         private void GetLocalVideoFiles()
         {
-            LocalVideoFiles = new List<VideoFile>();
-
             foreach (var directory in Directory.GetDirectories(Settings.BarcodeManager.OutputDirectory))
             {
                 var collectionFile = Path.Combine(directory, "videocollection.json");
@@ -139,7 +138,7 @@ namespace BarcodeManager.ViewModels
                 if (!File.Exists(collectionFile))
                     continue;
 
-                LocalVideoFiles.AddRange(JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(collectionFile)).VideoFiles);
+                VideoCollection = JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(collectionFile));
             }
         }
 

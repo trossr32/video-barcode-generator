@@ -4,27 +4,27 @@ using System.IO;
 using FilmBarcodes.Common.Enums;
 using Newtonsoft.Json;
 
-namespace FilmBarcodes.Common.Models.BarcodeManager
+namespace FilmBarcodes.Common.Models.BarcodeManagerOld
 {
     public class VideoCollection
     {
         public VideoCollection()
         {
             Config = new VideoConfig();
-            BarcodeConfigs = new List<BarcodeConfig>();
             Data = new VideoData();
+            VideoFiles = new List<VideoFile>();
         }
 
         public VideoCollection(string file, Settings.BarcodeManager settings)
         {
             Config = new VideoConfig(file, settings);
-            BarcodeConfigs = new List<BarcodeConfig>();
             Data = new VideoData();
+            VideoFiles = new List<VideoFile>();
         }
 
         public VideoConfig Config { get; set; }
-        public List<BarcodeConfig> BarcodeConfigs { get; set; }
         public VideoData Data { get; set; }
+        public List<VideoFile> VideoFiles { get; set; }
         
 
         public void Write()

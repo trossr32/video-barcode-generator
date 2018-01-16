@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace FilmBarcodes.Common.Models.BarcodeManager
+namespace FilmBarcodes.Common.Models.BarcodeManagerOld
 {
     public class VideoLibraryItem
     {
@@ -11,11 +11,11 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
             Processed = processed;
             Source = source;
 
-            StandardBarcodeCreated = processed.BarcodeConfigs.Any(p =>
+            StandardBarcodeCreated = processed.VideoFiles.Any(p =>
             {
                 try
                 {
-                    return File.Exists(p.Barcode_Standard.FullOutputFile);
+                    return File.Exists(p.StandardImage.FullOutputFile);
                 }
                 catch (Exception)
                 {
@@ -23,11 +23,11 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
                 }
             });
 
-            OnePixelBarcodeCreated = processed.BarcodeConfigs.Any(p =>
+            OnePixelBarcodeCreated = processed.VideoFiles.Any(p =>
             {
                 try
                 {
-                    return File.Exists(p.Barcode_1px?.FullOutputFile);
+                    return File.Exists(p.CompressedOnePixelImage?.FullOutputFile);
                 }
                 catch (Exception)
                 {

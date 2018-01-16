@@ -61,6 +61,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataFix.cs" />
     <Compile Include="HelpersXmlTests.cs" />
     <Compile Include="ImageProcessorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

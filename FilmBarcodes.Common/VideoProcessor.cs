@@ -16,7 +16,7 @@ namespace FilmBarcodes.Common
             return new FFProbe().GetMediaInfo(file);
         }
 
-        public static VideoCollection BuildColourListAsync(VideoCollection videoCollection, VideoFile videoFile, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
+        public static VideoCollection BuildColourListAsync(VideoCollection videoCollection, BarcodeConfig videoFile, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
             Directory.CreateDirectory(videoCollection.Config.ImageDirectory);
 
@@ -36,8 +36,8 @@ namespace FilmBarcodes.Common
                 // nreco can fail on the last frame, unsure why at the moment. Maybe duration & frame count mismatch?
                 if (hex != null)
                 {
-                    videoCollection.Data.Images.Add(new VideoImage {Frame = i, Name = image});
-                    videoCollection.Data.Colours.Add(new VideoColour {Frame = i, Hex = hex});
+                    videoCollection.Data.Images.Add(new VideoImage { Frame = i, Name = image});
+                    videoCollection.Data.Colours.Add(new VideoColour { Frame = i, Hex = hex});
                 }
 
                 progress.Report(new ProgressWrapper(videoCollection.Config.Duration, i, ProcessType.BuildColourList));

@@ -16,6 +16,7 @@ namespace BarcodeManager.Views
         private BarcodeCreatorParent _barcodeCreatorParent;
         private Home _home;
         private CafePressDesigns _cafePressDesigns;
+        private VideoLibrary _videoLibrary;
 
         private SettingsWrapper _settings;
         private static Logger _logger;
@@ -35,6 +36,8 @@ namespace BarcodeManager.Views
             _barcodeCreatorParent = new BarcodeCreatorParent(_settings);
 
             _cafePressDesigns = new CafePressDesigns(_settings);
+
+            _videoLibrary = new VideoLibrary(_settings);
 
             ContentArea.Content = _barcodeCreatorParent;
         }
@@ -73,7 +76,7 @@ namespace BarcodeManager.Views
                     ContentArea.Content = _cafePressDesigns;
                     break;
                 case TabType.VideoLibrary:
-                    ContentArea.Content = _cafePressDesigns;
+                    ContentArea.Content = _videoLibrary;
                     break;
             }
         }

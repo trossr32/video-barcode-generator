@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using FilmBarcodes.Common.Enums;
 
-namespace FilmBarcodes.Common.Models.BarcodeManager
+namespace FilmBarcodes.Common.Models.BarcodeManagerOld
 {
     public class VideoFile
     {
@@ -40,10 +40,10 @@ namespace FilmBarcodes.Common.Models.BarcodeManager
         public string VideoFileName { get; set; }
         public string VideoFilenameWithoutExtension { get; set; }
 
-        public List<OutputImage> OutputImages {get;set;}
+        public List<OutputImage> OutputImages {get; set;}
 
-        public OutputImage StandardImage => OutputImages.FirstOrDefault(o => o.OutputImageType == OutputImageType.Standard);
-        public OutputImage CompressedOnePixelImage => OutputImages.FirstOrDefault(o => o.OutputImageType == OutputImageType.CompressedOnePixel);
+        public OutputImage StandardImage => OutputImages.FirstOrDefault(o => !o.OutputFilename.Contains("_1px_"));
+        public OutputImage CompressedOnePixelImage => OutputImages.FirstOrDefault(o => o.OutputFilename.Contains("_1px_"));
 
         /// <summary>
         ///   Use this field if the frame images were created successfully but the following steps failed (zip, build & write json)
