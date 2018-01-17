@@ -103,19 +103,19 @@ namespace BarcodeManager.ViewModels
 
             // delete the temp shite
 
-            Directory.Delete("D:\\MagickTemp");
+            Directory.Delete("D:\\MagickTemp", true);
             Directory.CreateDirectory("D:\\MagickTemp");
 
             // process missing shiz
 
-            ProcessMultipleFiles((from directory in Directory.GetDirectories(_settings.BarcodeManager.OutputDirectory)
-                select Path.Combine(directory, "videocollection.json")
-                into file
-                where File.Exists(file)
-                select JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(file))
-                into videoCollection
-                where !File.Exists(videoCollection.BarcodeConfigs.First().Barcode_1px.FullOutputFile)
-                select videoCollection.Config.FullPath).ToArray());
+            //ProcessMultipleFiles((from directory in Directory.GetDirectories(_settings.BarcodeManager.OutputDirectory)
+            //    select Path.Combine(directory, "videocollection.json")
+            //    into file
+            //    where File.Exists(file)
+            //    select JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(file))
+            //    into videoCollection
+            //    where !File.Exists(videoCollection.BarcodeConfigs.First().Barcode_1px.FullOutputFile)
+            //    select videoCollection.Config.FullPath).ToArray());
         }
 
         private void ImportFile()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -15,14 +16,31 @@ namespace FilmBarcodes.Common
     public static class ImageProcessor
     {
         private static Logger _logger;
+        private static readonly string TempDir = @"D:\MagickTemp";
 
         public static string GetAverageHtmlColourFromImageStreamUsingScale(int frameTime, string file, VideoCollection videoCollection)
         {
-            MagickNET.SetTempDirectory(@"D:\MagickTemp");
+            MagickNET.SetTempDirectory(TempDir);
 
             using (MemoryStream ms = new MemoryStream())
             {
                 new NReco.VideoConverter.FFMpegConverter().GetVideoThumbnail(videoCollection.Config.FullPath, ms, frameTime);
+
+
+
+                //var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
+
+                //var thumbSettings = new NReco.VideoConverter.ConvertSettings()
+                //{
+                //    VideoFrameRate = 1,
+                //    VideoFrameCount = 1, // extract exactly 1 frame
+                //    Seek = 0, // frame position in seconds
+                //    CustomOutputArgs = "" // any ffmpeg arguments that goes before output param
+                //};
+
+                //ffMpeg.ConvertMedia(videoCollection.Config.FullPath, null, ms, "mjpeg", thumbSettings);
+
+
 
                 if (ms.Length == 0)
                     return null;
@@ -45,7 +63,7 @@ namespace FilmBarcodes.Common
 
         public static string GetAverageHtmlColourFromImageUsingScale(int frame, VideoCollection videoCollection)
         {
-            MagickNET.SetTempDirectory(@"D:\MagickTemp");
+            MagickNET.SetTempDirectory(TempDir);
 
             using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.ImageDirectory, $"frame.{frame}.jpg")))
             {
@@ -94,7 +112,9 @@ namespace FilmBarcodes.Common
 
         public static void BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection videoCollection, BarcodeConfig file, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
-            MagickNET.SetTempDirectory(@"D:\MagickTemp");
+            MagickNET.SetTempDirectory(TempDir);
+
+            const int partDivider = 1000;
 
             Directory.CreateDirectory(videoCollection.Config.OnePixelImageDirectory);
 
@@ -109,8 +129,12 @@ namespace FilmBarcodes.Common
             // get any image files now to save querying the file system for every image
             string[] imageFiles = Directory.GetFiles(videoCollection.Config.OnePixelImageDirectory);
 
+            List<string> imageParts = new List<string>();
+            
             using (MagickImageCollection images = new MagickImageCollection())
             {
+                int geo = 0;
+
                 for (var i = 0; i < videoCollection.Data.Images.Count; i++)
                 {
                     var frame = videoCollection.Data.Images[i];
@@ -122,16 +146,70 @@ namespace FilmBarcodes.Common
                         {
                             // Resize the image to a fixed size without maintaining the aspect ratio (normally an image will be resized to fit inside the specified size)
                             image.Resize(new MagickGeometry(1, file.OutputHeight) {IgnoreAspectRatio = true});
-                            image.Page = new MagickGeometry(i * 1, 0, 0, 0);
+                            image.Page = new MagickGeometry(geo, 0, 0, 0);
 
                             image.Write(Path.Combine(videoCollection.Config.OnePixelImageDirectory, frame.Name));
+
+                            images.Add(image.Clone());
+                        }
+                    else
+                        using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.OnePixelImageDirectory, frame.Name)))
+                        {
+                            images.Add(image.Clone());
                         }
 
-                    images.Add(new MagickImage(Path.Combine(videoCollection.Config.OnePixelImageDirectory, frame.Name)));
+                    geo++;
+
+                    // split out and write partitioned images every 1000 frames to prevent ImageMagick's 'too many open files' fuckery
+                    if (i % partDivider == 0 && i != 0)
+                    {
+                        var part = Path.Combine(TempDir, $"{Guid.NewGuid()}.jpg");
+
+                        using (IMagickImage result = images.Mosaic())
+                        {
+                            result.Write(part);
+                        }
+
+                        images.Clear();
+
+                        imageParts.Add(part);
+
+                        geo = 0;
+                    }
 
                     progress.Report(new ProgressWrapper(videoCollection.Data.Images.Count, frame.Frame, ProcessType.RenderImageCompressedToOnePixelWide));
                 }
 
+                // create the last part
+                var lastPart = Path.Combine(TempDir, $"{Guid.NewGuid()}.jpg");
+
+                using (IMagickImage result = images.Mosaic())
+                {
+                    result.Write(lastPart);
+                }
+
+                images.Clear();
+
+                imageParts.Add(lastPart);
+
+                // add all the parts to the image collection
+                geo = 0;
+
+                foreach (var imagePart in imageParts)
+                {
+                    using (MagickImage image = new MagickImage(imagePart))
+                    {
+                        image.Page = new MagickGeometry(geo, 0, 0, 0);
+
+                        images.Add(image.Clone());
+                    }
+
+                    geo = geo + partDivider;
+
+                    File.Delete(imagePart);
+                }
+
+                // lets do some fucking barcode magic
                 using (IMagickImage result = images.Mosaic())
                 {
                     result.Write(file.Barcode_1px.FullOutputFile);
