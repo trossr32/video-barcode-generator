@@ -120,13 +120,13 @@ namespace BarcodeManager.ViewModels
             _storeMethods = new StoreMethods(Settings);
             _designMethods = new DesignMethods(Settings);
 
-            Stores = _storeMethods.ListStores();
+            //Stores = _storeMethods.ListStores();
 
             //RaisePropertyChangedEvent("Stores");
 
-            Designs = _designMethods.List();
+            //Designs = _designMethods.List();
 
-            GetLocalVideoFiles();
+            //GetLocalVideoFiles();
         }
 
         private void GetLocalVideoFiles()

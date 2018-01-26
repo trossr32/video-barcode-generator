@@ -13,7 +13,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:ReverseBoolToVisibilityConverter x:Key="ReverseBoolToVisibilityConverter" />
         <converters:SuccessVisibleIconSizeConverter x:Key="SuccessVisibleIconSizeConverter" />
-        <converters:SuccessVisibleButtonIconSizeConverter x:Key="SuccessVisibleButtonIconSizeConverter" />
+        <converters:ShallowHeightIfTrueButtonIconSizeConverter x:Key="ShallowHeightIfTrueButtonIconSizeConverter" />
     </UserControl.Resources>
     <Grid>
         <materialDesign:Card Grid.Row="0" Margin="0,5,5,5" Width="Auto" VerticalAlignment="Top" materialDesign:ShadowAssist.ShadowDepth="Depth5">
@@ -55,21 +55,27 @@
                                                 </materialDesign:PopupBox.ToggleCheckedContent>
                                             </materialDesign:PopupBox>
 
-                                            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" Width="32" Height="32"
+                                            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" 
+                                                                     Width="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource ShallowHeightIfTrueButtonIconSizeConverter}}" 
+                                                                     Height="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource ShallowHeightIfTrueButtonIconSizeConverter}}" 
                                                                      PlacementMode="LeftAndAlignMiddles" ToggleCheckedContentCommand="{Binding DeleteTaskCommand}"
                                                                      Visibility="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                                                 <materialDesign:PopupBox.ToggleContent>
-                                                    <materialDesign:PackIcon Kind="Clock" Width="26" Height="26" ToolTip="Queued" />
+                                                    <materialDesign:PackIcon Kind="Clock" ToolTip="Queued"
+                                                                             Width="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" 
+                                                                             Height="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" />
                                                 </materialDesign:PopupBox.ToggleContent>
 
                                                 <materialDesign:PopupBox.ToggleCheckedContent>
-                                                    <materialDesign:PackIcon Kind="Close" Width="26" Height="26" ToolTip="Delete" />
+                                                    <materialDesign:PackIcon Kind="Close" ToolTip="Delete"
+                                                                             Width="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" 
+                                                                             Height="{Binding TaskProgressVisibility.QueuedVisible, Converter={StaticResource SuccessVisibleIconSizeConverter}}" />
                                                 </materialDesign:PopupBox.ToggleCheckedContent>
                                             </materialDesign:PopupBox>
 
                                             <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}" 
-                                                                     Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
-                                                                     Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource SuccessVisibleButtonIconSizeConverter}}" 
+                                                                     Width="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ShallowHeightIfTrueButtonIconSizeConverter}}" 
+                                                                     Height="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ShallowHeightIfTrueButtonIconSizeConverter}}" 
                                                                      PlacementMode="LeftAndAlignMiddles" ToggleCheckedContentCommand="{Binding DeleteTaskCommand}"
                                                                      Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                                                 <materialDesign:PopupBox.ToggleContent>
@@ -106,13 +112,13 @@
                                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                             <TextBlock FontWeight="Bold" Text="{Binding VideoCollection.Config.FileName}" />
                                             <TextBlock Text="{Binding Elapsed, Converter={StaticResource TimeSpanConverter}}" Margin="0,5,0,0"
-                                                       Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ReverseBoolToVisibilityConverter}}" />
+                                                       Visibility="{Binding TaskProgressVisibility.ProgressVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2" Margin="20,0,20,0">
                                             <TextBlock Foreground="{StaticResource MaterialDesignDarkForeground}" Text="{Binding Progress.Status}" HorizontalAlignment="Right" />
                                             <ProgressBar Height="15" Margin="0,5,0,0" Value="{Binding Progress.Progress}"
-                                                         Visibility="{Binding TaskProgressVisibility.SuccessVisible, Converter={StaticResource ReverseBoolToVisibilityConverter}}"/>
+                                                         Visibility="{Binding TaskProgressVisibility.ProgressVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>

@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace BarcodeManager.Converters
 {
-    public class SuccessVisibleButtonIconSizeConverter : IValueConverter
+    public class ShallowHeightIfTrueButtonIconSizeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

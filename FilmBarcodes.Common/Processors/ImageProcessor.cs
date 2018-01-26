@@ -6,42 +6,38 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using FilmBarcodes.Common.Enums;
+using FilmBarcodes.Common.Helpers;
 using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
+using FilmBarcodes.Common.Models.Settings;
 using ImageMagick;
 using NLog;
 
-namespace FilmBarcodes.Common
+namespace FilmBarcodes.Common.Processors
 {
     public static class ImageProcessor
     {
         private static Logger _logger;
-        private static readonly string TempDir = @"D:\MagickTemp";
 
-        public static string GetAverageHtmlColourFromImageStreamUsingScale(int frameTime, string file, VideoCollection videoCollection)
+        private static string SetTempDir(SettingsWrapper settings)
         {
-            MagickNET.SetTempDirectory(TempDir);
+            var dir = Path.Combine(settings.BarcodeManager.MagickImageTempDir, Guid.NewGuid().ToString());
+
+            Directory.CreateDirectory(dir);
+
+            MagickNET.SetTempDirectory(dir);
+
+            return dir;
+        }
+        
+        public static string GetAverageHtmlColourFromImageStreamUsingScale(int frameTime, string file, VideoCollection videoCollection, SettingsWrapper settings)
+        {
+            MagickNET.SetTempDirectory(settings.BarcodeManager.MagickImageTempDir); 
 
             using (MemoryStream ms = new MemoryStream())
             {
                 new NReco.VideoConverter.FFMpegConverter().GetVideoThumbnail(videoCollection.Config.FullPath, ms, frameTime);
-
-
-
-                //var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
-
-                //var thumbSettings = new NReco.VideoConverter.ConvertSettings()
-                //{
-                //    VideoFrameRate = 1,
-                //    VideoFrameCount = 1, // extract exactly 1 frame
-                //    Seek = 0, // frame position in seconds
-                //    CustomOutputArgs = "" // any ffmpeg arguments that goes before output param
-                //};
-
-                //ffMpeg.ConvertMedia(videoCollection.Config.FullPath, null, ms, "mjpeg", thumbSettings);
-
-
-
+                
                 if (ms.Length == 0)
                     return null;
 
@@ -61,9 +57,9 @@ namespace FilmBarcodes.Common
             }
         }
 
-        public static string GetAverageHtmlColourFromImageUsingScale(int frame, VideoCollection videoCollection)
+        public static string GetAverageHtmlColourFromImageUsingScale(int frame, VideoCollection videoCollection, SettingsWrapper settings)
         {
-            MagickNET.SetTempDirectory(TempDir);
+            MagickNET.SetTempDirectory(settings.BarcodeManager.MagickImageTempDir);
 
             using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.ImageDirectory, $"frame.{frame}.jpg")))
             {
@@ -101,7 +97,7 @@ namespace FilmBarcodes.Common
 
                     Rectangle imageSize = new Rectangle(i, 0, i, file.OutputHeight);
                     
-                    graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(videoCollection.Data.Colours[i].Hex)), imageSize);
+                    graph.FillRectangle(new SolidBrush(ColorTranslator.FromHtml(videoCollection.Data.Colours.First(c => c.Frame == Convert.ToInt32(frame)).Hex)), imageSize);
 
                     progress.Report(new ProgressWrapper(file.OutputWidth, i + 1, ProcessType.RenderImage));
                 }
@@ -110,9 +106,9 @@ namespace FilmBarcodes.Common
             bmp.Save(file.Barcode_Standard.FullOutputFile, ImageFormat.Jpeg);
         }
 
-        public static void BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection videoCollection, BarcodeConfig file, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
+        public static void BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection videoCollection, BarcodeConfig file, SettingsWrapper settings, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
-            MagickNET.SetTempDirectory(TempDir);
+            MagickNET.SetTempDirectory(settings.BarcodeManager.MagickImageTempDir);
 
             const int partDivider = 1000;
 
@@ -163,7 +159,7 @@ namespace FilmBarcodes.Common
                     // split out and write partitioned images every 1000 frames to prevent ImageMagick's 'too many open files' fuckery
                     if (i % partDivider == 0 && i != 0)
                     {
-                        var part = Path.Combine(TempDir, $"{Guid.NewGuid()}.jpg");
+                        var part = Path.Combine(settings.BarcodeManager.MagickImageTempDir, $"{Guid.NewGuid()}.jpg");
 
                         using (IMagickImage result = images.Mosaic())
                         {
@@ -181,7 +177,7 @@ namespace FilmBarcodes.Common
                 }
 
                 // create the last part
-                var lastPart = Path.Combine(TempDir, $"{Guid.NewGuid()}.jpg");
+                var lastPart = Path.Combine(settings.BarcodeManager.MagickImageTempDir, $"{Guid.NewGuid()}.jpg");
 
                 using (IMagickImage result = images.Mosaic())
                 {
@@ -215,6 +211,8 @@ namespace FilmBarcodes.Common
                     result.Write(file.Barcode_1px.FullOutputFile);
                 }
             }
+
+            //Cache.ClearMagickImageCache(tempDir);
         }
     }
 }

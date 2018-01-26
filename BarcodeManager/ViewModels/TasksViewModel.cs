@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FilmBarcodes.Common;
 using FilmBarcodes.Common.Enums;
+using FilmBarcodes.Common.Helpers;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.Settings;
 using NLog;
@@ -15,6 +16,7 @@ namespace BarcodeManager.ViewModels
         private readonly SettingsWrapper _settings;
         private ObservableCollection<TaskProgressViewModel> _tasks;
         private bool _taskListVisible;
+        private int _cacheClearCounter;
 
         public ObservableCollection<TaskProgressViewModel> Tasks
         {
@@ -51,7 +53,7 @@ namespace BarcodeManager.ViewModels
 
             _logger.Info($"Creating task id:{taskId}, {videoCollection.Config.FilenameWithoutExtension}");
             
-            Tasks.Add(new TaskProgressViewModel(this, videoFile, videoCollection, taskId));
+            Tasks.Add(new TaskProgressViewModel(this, videoFile, videoCollection, _settings, taskId));
 
             TaskListVisible = true;
 
@@ -63,6 +65,26 @@ namespace BarcodeManager.ViewModels
 
         private async void TaskComplete()
         {
+            _cacheClearCounter++;
+
+            // if the number of running tasks and completed tasks matches the clear cache counter, then don't kick off anything new
+            if (_cacheClearCounter + Tasks.Count(t => t.State == State.Running) >= _settings.BarcodeManager.NumberOfTasksToRunBetweenCacheClear)
+            {
+                // if there's nothing running then clear the cache
+                if (_cacheClearCounter >= _settings.BarcodeManager.NumberOfTasksToRunBetweenCacheClear && Tasks.All(t => t.State != State.Running))
+                {
+                    Cache.ClearMagickImageCache(_settings, _logger);
+
+                    // kick off number of current tasks again
+                    for (int i = 0; i < _settings.BarcodeManager.NumberOfConcurrentTasks; i++)
+                    {
+                        RunTask();
+                    }
+                }
+
+                return;
+            }
+
             if (Tasks.Any(t => t.State == State.Queued))
                 await RunTask();
         }

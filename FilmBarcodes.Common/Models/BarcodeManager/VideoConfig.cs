@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using FilmBarcodes.Common.Processors;
 using NReco.VideoInfo;
 
 namespace FilmBarcodes.Common.Models.BarcodeManager

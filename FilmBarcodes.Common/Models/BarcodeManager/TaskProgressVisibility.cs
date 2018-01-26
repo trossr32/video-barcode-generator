@@ -7,5 +7,7 @@
         public bool SuccessVisible { get; set; }
         public bool FailureVisible { get; set; }
         public bool CancelledVisible { get; set; }
+
+        public bool ProgressVisible { get; set; }
     }
 }

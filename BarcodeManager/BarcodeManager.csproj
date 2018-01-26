@@ -29,7 +29,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>Barcode Manager</ProductName>
     <PublisherName>Rob Green</PublisherName>
-    <ApplicationRevision>16</ApplicationRevision>
+    <ApplicationRevision>26</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -186,7 +186,7 @@
     </Compile>
     <Compile Include="Converters\BoolToYesNo.cs" />
     <Compile Include="Converters\SuccessVisibleIconSizeConverter.cs" />
-    <Compile Include="Converters\SuccessVisibleButtonIconSizeConverter.cs" />
+    <Compile Include="Converters\ShallowHeightIfTrueButtonIconSizeConverter.cs" />
     <Compile Include="Converters\ReverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\TimeSpanToStringConverter.cs" />

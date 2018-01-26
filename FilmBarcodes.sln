@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafePress.Api", "CafePress.Api\CafePress.Api.csproj", "{72FF63C8-E993-438D-9BA2-D77EEED4E7F0}"
 EndProject
@@ -18,6 +18,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Batch files", "Batch files", "{FF87BA84-AA3D-45FE-BC82-F5A5E9F36A3C}"
 	ProjectSection(SolutionItems) = preProject
 		Batch files\BarcodeManager.bat = Batch files\BarcodeManager.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dlls", "dlls", "{2828A712-E097-4D48-A202-E44E15B14CBD}"
+	ProjectSection(SolutionItems) = preProject
+		dlls\NReco.VideoInfo.dll = dlls\NReco.VideoInfo.dll
 	EndProjectSection
 EndProject
 Global

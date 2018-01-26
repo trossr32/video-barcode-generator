@@ -10,6 +10,8 @@ using FilmBarcodes.Common;
 using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
+using FilmBarcodes.Common.Models.Settings;
+using FilmBarcodes.Common.Processors;
 using NLog;
 
 namespace BarcodeManager.ViewModels
@@ -20,6 +22,7 @@ namespace BarcodeManager.ViewModels
 
         private readonly TasksViewModel _parent;
         private readonly Logger _logger;
+        private readonly SettingsWrapper _settings;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         private State _state;
@@ -43,6 +46,8 @@ namespace BarcodeManager.ViewModels
                 TaskProgressVisibility.SuccessVisible = _state == State.Success;
                 TaskProgressVisibility.FailureVisible = _state == State.Failure;
                 TaskProgressVisibility.CancelledVisible = _state == State.Cancelled;
+
+                TaskProgressVisibility.ProgressVisible = _state == State.Running;
 
                 RaisePropertyChangedEvent("State");
             }
@@ -110,10 +115,11 @@ namespace BarcodeManager.ViewModels
         public ICommand CancelTaskCommand => new DelegateCommand(CancelTask);
         public ICommand DeleteTaskCommand => new DelegateCommand(DeleteTask);
 
-        public TaskProgressViewModel(TasksViewModel parent, BarcodeConfig barcodeConfig, VideoCollection videoCollection, int id)
+        public TaskProgressViewModel(TasksViewModel parent, BarcodeConfig barcodeConfig, VideoCollection videoCollection, SettingsWrapper settings, int id)
         {
             _parent = parent;
             _logger = LogManager.GetCurrentClassLogger();
+            _settings = settings;
 
             BarcodeConfig = barcodeConfig;
             VideoCollection = videoCollection;
@@ -161,7 +167,7 @@ namespace BarcodeManager.ViewModels
                 return ProcessUnsuccessfulTaskResponse(response);
 
             // if required, build the colour list
-            if (!VideoCollection.Data.Colours.Any())
+            if (VideoCollection.Data.Colours.Count != VideoCollection.Config.Duration)
             {
                 var buildColourListResponse = await Task.Run(() =>
                 {
@@ -169,7 +175,7 @@ namespace BarcodeManager.ViewModels
 
                     try
                     {
-                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, BarcodeConfig, progress, _cancellationTokenSource.Token);
+                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, BarcodeConfig, _settings, progress, _cancellationTokenSource.Token);
                     }
                     catch (OperationCanceledException)
                     {
@@ -245,7 +251,7 @@ namespace BarcodeManager.ViewModels
                 {
                     try
                     {
-                        ImageProcessor.BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection, BarcodeConfig, progress, _cancellationTokenSource.Token);
+                        ImageProcessor.BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection, BarcodeConfig, _settings, progress, _cancellationTokenSource.Token);
                     }
                     catch (OperationCanceledException)
                     {

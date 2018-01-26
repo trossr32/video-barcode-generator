@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.Settings;
+using FilmBarcodes.Common.Processors;
 using Newtonsoft.Json;
+using NReco.VideoInfo;
 using NUnit.Framework;
 
 namespace FilmBarcodes.Common.Tests
@@ -21,7 +24,8 @@ namespace FilmBarcodes.Common.Tests
         [Test]
         public void FixJson()
         {
-            foreach (var directory in Directory.GetDirectories(_settings.BarcodeManager.OutputDirectory))
+            // need to fix duration to be the math.floor value, so re-grab all videos and get their durations, and update the json
+            foreach (var directory in Directory.GetDirectories(_settings.BarcodeManager.OutputDirectory).Where(x => x.ToLower().Contains("nemo")))
             {
                 var file = Path.Combine(directory, "videocollection.json");
 
@@ -31,13 +35,11 @@ namespace FilmBarcodes.Common.Tests
                 //Models.BarcodeManagerOld.VideoCollection videoCollection = JsonConvert.DeserializeObject<Models.BarcodeManagerOld.VideoCollection>(File.ReadAllText(file));
                 VideoCollection videoCollection = JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(file));
 
-                foreach (var barcodeConfig in videoCollection.BarcodeConfigs)
-                {
-                    if (barcodeConfig.Barcode_Standard.OutputFilename.StartsWith("_"))
-                    {
-                        var x = "";
-                    }
-                }
+                MediaInfo fileInfo = VideoProcessor.GetVideoInfo(videoCollection.Config.FullPath);
+
+                VideoConfig vc = new VideoConfig(videoCollection.Config.FullPath, _settings.BarcodeManager);
+
+                
 
                 //if (videoCollection.VideoFiles.Count == 0)
                 //    continue;

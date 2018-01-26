@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using BarcodeManager.Models;
 using FilmBarcodes.Common;
+using FilmBarcodes.Common.Helpers;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.Settings;
 using GongSolutions.Wpf.DragDrop;
@@ -24,7 +25,7 @@ namespace BarcodeManager.ViewModels
         private static Logger _logger;
 
         private SettingsWrapper _settings;
-        private BarcodeConfig _videoFile;
+        private BarcodeConfig _barcodeConfig;
         private VideoCollection _videoCollection;
         private bool _useExistingFrameImagesVisible;
         private bool _previousBarcodesVisible;
@@ -40,12 +41,12 @@ namespace BarcodeManager.ViewModels
             }
         }
 
-        public BarcodeConfig VideoFile
+        public BarcodeConfig BarcodeConfig
         {
-            get => _videoFile;
+            get => _barcodeConfig;
             set
             {
-                _videoFile = value;
+                _barcodeConfig = value;
                 
                 RaisePropertyChangedEvent("BarcodeConfig");
             }
@@ -58,7 +59,7 @@ namespace BarcodeManager.ViewModels
             {
                 _videoCollection = value;
 
-                //VisibleIfVideoFileValid = _videoFile.IsValid ? Visibility.Visible : Visibility.Collapsed;
+                //VisibleIfVideoFileValid = _barcodeConfig.IsValid ? Visibility.Visible : Visibility.Collapsed;
 
                 RaisePropertyChangedEvent("VideoCollection");
             }
@@ -103,19 +104,31 @@ namespace BarcodeManager.ViewModels
 
             // delete the temp shite
 
-            Directory.Delete("D:\\MagickTemp", true);
-            Directory.CreateDirectory("D:\\MagickTemp");
+            Cache.ClearMagickImageCache(Settings, _logger);
 
             // process missing shiz
 
-            //ProcessMultipleFiles((from directory in Directory.GetDirectories(_settings.BarcodeManager.OutputDirectory)
-            //    select Path.Combine(directory, "videocollection.json")
-            //    into file
-            //    where File.Exists(file)
-            //    select JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(file))
-            //    into videoCollection
-            //    where !File.Exists(videoCollection.BarcodeConfigs.First().Barcode_1px.FullOutputFile)
-            //    select videoCollection.Config.FullPath).ToArray());
+            List<string> list = new List<string>();
+            List<string> movies = Directory.GetFiles(@"M:\movies", "*", SearchOption.AllDirectories).ToList();
+
+            foreach (var directory in Directory.GetDirectories(_settings.BarcodeManager.OutputDirectory))
+            {
+                var file = Path.Combine(directory, "videocollection.json");
+
+                if (File.Exists(file))
+                {
+                    var videoCollection = JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(file));
+
+                    if (!File.Exists(videoCollection.BarcodeConfigs.First().Barcode_1px.FullOutputFile))
+                        list.Add(videoCollection.Config.FullPath);
+                }
+                else if (!directory.Contains(".logs"))
+                {
+                    list.Add(movies.First(m => m.Contains(directory.Split('\\').Last())));
+                }
+            }
+
+            ProcessMultipleFiles(list.ToArray());
         }
 
         private void ImportFile()
@@ -168,7 +181,7 @@ namespace BarcodeManager.ViewModels
         {
             VideoCollection = CreateVideoCollection(file);
 
-            VideoFile = new BarcodeConfig(VideoCollection.Config.Duration, VideoCollection.Config.FilenameWithoutExtension);
+            BarcodeConfig = new BarcodeConfig(VideoCollection.Config.Duration, VideoCollection.Config.FilenameWithoutExtension);
 
             PreviousBarcodesVisible = VideoCollection.BarcodeConfigs.Any();
 
@@ -179,12 +192,12 @@ namespace BarcodeManager.ViewModels
                 // frame image count tends to be 1 less than duration seconds (rounding or for index error?)
                 UseExistingFrameImagesVisible = fileCount >= VideoCollection.Config.Duration - 1 && fileCount <= VideoCollection.Config.Duration;
 
-                VideoFile.UseExistingFrameImages = true;
-
-                RaisePropertyChangedEvent("BarcodeConfig");
+                BarcodeConfig.UseExistingFrameImages = true;
             }
             else
                 UseExistingFrameImagesVisible = false;
+
+            RaisePropertyChangedEvent("BarcodeConfig");
         }
 
         private VideoCollection CreateVideoCollection(string file)
@@ -209,14 +222,14 @@ namespace BarcodeManager.ViewModels
 
         private void SetWidthToDuration()
         {
-            VideoFile.OutputWidth = VideoCollection.Config.Duration;
+            BarcodeConfig.OutputWidth = VideoCollection.Config.Duration;
 
             RaisePropertyChangedEvent("BarcodeConfig");
         }
 
         private void SetWidthToCanvasRatio()
         {
-            VideoFile.OutputWidth = VideoFile.OutputWidthAsCanvasRatio;
+            BarcodeConfig.OutputWidth = BarcodeConfig.OutputWidthAsCanvasRatio;
 
             RaisePropertyChangedEvent("BarcodeConfig");
         }
@@ -261,12 +274,12 @@ namespace BarcodeManager.ViewModels
             
             VideoCollection.Config.FullOutputDirectory = Path.Combine(Settings.BarcodeManager.OutputDirectory, VideoCollection.Config.OutputDirectory);
 
-            VideoFile.SetOutputImagesFullDirectory(VideoCollection);
+            BarcodeConfig.SetOutputImagesFullDirectory(VideoCollection);
 
-            _tasksViewModel.AddTask(VideoFile, VideoCollection);
+            _tasksViewModel.AddTask(BarcodeConfig, VideoCollection);
 
             VideoCollection = null;
-            VideoFile = null;
+            BarcodeConfig = null;
             UseExistingFrameImagesVisible = false; 
         }
         

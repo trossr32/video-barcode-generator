@@ -33,6 +33,9 @@
 
         public void SetOutputImagesFullDirectory(VideoCollection videoCollection)
         {
+            Barcode_Standard = new OutputImage { OutputFilename = $"{videoCollection.Config.FilenameWithoutExtension}_{OutputWidth}_{OutputHeight}.jpg" };
+            Barcode_1px = new OutputImage { OutputFilename = $"{videoCollection.Config.FilenameWithoutExtension}_1px_{OutputWidth}_{OutputHeight}.jpg" };
+
             Barcode_Standard.SetFullOutputFile(videoCollection);
             Barcode_1px.SetFullOutputFile(videoCollection);
         }

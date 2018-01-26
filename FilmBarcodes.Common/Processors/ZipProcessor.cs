@@ -5,7 +5,7 @@ using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
 
-namespace FilmBarcodes.Common
+namespace FilmBarcodes.Common.Processors
 {
     public static class ZipProcessor
     {

@@ -40,6 +40,9 @@ namespace FilmBarcodes.Common.Models.Settings
         public List<string> AcceptedVideoFiles => new List<string> { "avi", "divx", "m4v", "mkv", "m2ts", "mp4", "mpg", "wmv" };
 
         public int NumberOfConcurrentTasks => 3;
+        public int NumberOfTasksToRunBetweenCacheClear => 5;
+
+        public string MagickImageTempDir => @"D:\MagickTemp";
     }
 
     public class CafePress

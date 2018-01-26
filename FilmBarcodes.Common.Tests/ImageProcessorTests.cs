@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using ImageMagick;
+using NReco.VideoInfo;
 using NUnit.Framework;
 
 namespace FilmBarcodes.Common.Tests
@@ -50,6 +54,32 @@ namespace FilmBarcodes.Common.Tests
                 {
                     moscaic.Write(@"C:\Users\Rob\Pictures\mx5\Mosaic.png");
                 }
+            }
+        }
+
+        [Test]
+        public void CaptureFrames()
+        {
+            var ffProbe = new FFProbe();
+
+            var info = ffProbe.GetMediaInfo(@"M:\game videos\Super Mario Bros (1985) (Full Game Run).mp4");
+
+
+            var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
+
+            var thumbSettings = new NReco.VideoConverter.ConvertSettings()
+            {
+                VideoFrameRate = 1,
+                VideoFrameCount = 1, // extract exactly 1 frame
+                Seek = 30, // frame position in seconds
+                CustomOutputArgs = "" // any ffmpeg arguments that goes before output param
+            };
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                ffMpeg.ConvertMedia(@"M:\game videos\Super Mario Bros (1985) (Full Game Run).mp4", null, ms, "mjpeg", thumbSettings);
+
+                Image.FromStream(ms).Save(Path.Combine(@"M:\game videos", "test.jpg"), ImageFormat.Jpeg);
             }
         }
     }

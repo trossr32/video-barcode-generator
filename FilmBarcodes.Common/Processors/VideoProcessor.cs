@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using FilmBarcodes.Common.Enums;
 using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
+using FilmBarcodes.Common.Models.Settings;
 using NReco.VideoInfo;
 
-namespace FilmBarcodes.Common
+namespace FilmBarcodes.Common.Processors
 {
     public static class VideoProcessor
     {
@@ -16,12 +18,16 @@ namespace FilmBarcodes.Common
             return new FFProbe().GetMediaInfo(file);
         }
 
-        public static VideoCollection BuildColourListAsync(VideoCollection videoCollection, BarcodeConfig videoFile, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
+        public static VideoCollection BuildColourListAsync(VideoCollection videoCollection, BarcodeConfig videoFile, SettingsWrapper settings, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
             Directory.CreateDirectory(videoCollection.Config.ImageDirectory);
 
+            //initialise colour and image lists otherwise they just keep growing
+            videoCollection.Data.Images = new List<VideoImage>();
+            videoCollection.Data.Colours = new List<VideoColour>();
+
             // get any image files now to save querying the file system for every image
-            string[] imageFiles = Directory.GetFiles(videoCollection.Config.ImageDirectory);
+            List<string> imageFiles = Directory.GetFiles(videoCollection.Config.ImageDirectory).Select(f => f.Split('\\').Last()).ToList();
 
             for (int i = 1; i <= videoCollection.Config.Duration; i++)
             {
@@ -30,8 +36,8 @@ namespace FilmBarcodes.Common
                 var image = $"frame.{i}.jpg";
 
                 var hex = videoFile.UseExistingFrameImages && imageFiles.Any(f => f == image)
-                    ? ImageProcessor.GetAverageHtmlColourFromImageUsingScale(i, videoCollection)
-                    : ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, image, videoCollection);
+                    ? ImageProcessor.GetAverageHtmlColourFromImageUsingScale(i, videoCollection, settings)
+                    : ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, image, videoCollection, settings);
 
                 // nreco can fail on the last frame, unsure why at the moment. Maybe duration & frame count mismatch?
                 if (hex != null)
