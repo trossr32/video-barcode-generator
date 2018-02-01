@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using FilmBarcodes.Common.Enums;
-using FilmBarcodes.Common.Helpers;
 using FilmBarcodes.Common.Models;
 using FilmBarcodes.Common.Models.BarcodeManager;
 using FilmBarcodes.Common.Models.Settings;
@@ -19,20 +18,16 @@ namespace FilmBarcodes.Common.Processors
     {
         private static Logger _logger;
 
-        private static string SetTempDir(SettingsWrapper settings)
+        private static void SetTempDir(SettingsWrapper settings)
         {
-            var dir = Path.Combine(settings.BarcodeManager.MagickImageTempDir, Guid.NewGuid().ToString());
+            Directory.CreateDirectory(settings.BarcodeManager.MagickImageTempDir);
 
-            Directory.CreateDirectory(dir);
-
-            MagickNET.SetTempDirectory(dir);
-
-            return dir;
+            MagickNET.SetTempDirectory(settings.BarcodeManager.MagickImageTempDir);
         }
         
         public static string GetAverageHtmlColourFromImageStreamUsingScale(int frameTime, string file, VideoCollection videoCollection, SettingsWrapper settings)
         {
-            MagickNET.SetTempDirectory(settings.BarcodeManager.MagickImageTempDir); 
+            SetTempDir(settings);
 
             using (MemoryStream ms = new MemoryStream())
             {
@@ -59,7 +54,7 @@ namespace FilmBarcodes.Common.Processors
 
         public static string GetAverageHtmlColourFromImageUsingScale(int frame, VideoCollection videoCollection, SettingsWrapper settings)
         {
-            MagickNET.SetTempDirectory(settings.BarcodeManager.MagickImageTempDir);
+            SetTempDir(settings);
 
             using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.ImageDirectory, $"frame.{frame}.jpg")))
             {
@@ -108,7 +103,7 @@ namespace FilmBarcodes.Common.Processors
 
         public static void BuildAndRenderImageCompressedToOnePixelWideImageAsync(VideoCollection videoCollection, BarcodeConfig file, SettingsWrapper settings, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
-            MagickNET.SetTempDirectory(settings.BarcodeManager.MagickImageTempDir);
+            SetTempDir(settings);
 
             const int partDivider = 1000;
 
