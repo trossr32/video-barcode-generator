@@ -132,21 +132,34 @@ namespace FilmBarcodes.Common.Processors
 
                     cancellationToken.ThrowIfCancellationRequested();
 
+                    // Resize the image to the output height, if required
+                    // Add page to define the image's location in the mosaic
+                    // Clone the image add add to the mosaic input list
+                    void ResizeAndClone(MagickImage image)
+                    {
+                        if (image.Height != file.OutputHeight)
+                            image.Resize(new MagickGeometry(1, file.OutputHeight) { IgnoreAspectRatio = true });
+
+                        image.Page = new MagickGeometry(geo, 0, 0, 0);
+
+                        images.Add(image.Clone());
+                    }
+
                     if (imageFiles.All(f => f != frame.Name))
                         using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.ImageDirectory, frame.Name)))
                         {
                             // Resize the image to a fixed size without maintaining the aspect ratio (normally an image will be resized to fit inside the specified size)
-                            image.Resize(new MagickGeometry(1, file.OutputHeight) {IgnoreAspectRatio = true});
-                            image.Page = new MagickGeometry(geo, 0, 0, 0);
-
+                            // These frames will be created to the same height as the original image
+                            image.Resize(new MagickGeometry(1, image.Height) {IgnoreAspectRatio = true});
+                            
                             image.Write(Path.Combine(videoCollection.Config.OnePixelImageDirectory, frame.Name));
 
-                            images.Add(image.Clone());
+                            ResizeAndClone(image);
                         }
-                    else
+                    else // get the image from the file system
                         using (MagickImage image = new MagickImage(Path.Combine(videoCollection.Config.OnePixelImageDirectory, frame.Name)))
                         {
-                            images.Add(image.Clone());
+                            ResizeAndClone(image);
                         }
 
                     geo++;
@@ -171,7 +184,7 @@ namespace FilmBarcodes.Common.Processors
                     progress.Report(new ProgressWrapper(videoCollection.Data.Images.Count, frame.Frame, ProcessType.RenderImageCompressedToOnePixelWide));
                 }
 
-                // create the last part
+                // create the last, smaller than 1000 px part
                 var lastPart = Path.Combine(settings.BarcodeManager.MagickImageTempDir, $"{Guid.NewGuid()}.jpg");
 
                 using (IMagickImage result = images.Mosaic())
