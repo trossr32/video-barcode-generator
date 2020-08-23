@@ -27,7 +27,8 @@ namespace VideoBarcodeGenerator.Core.Models.BarcodeGenerator
 
         public int OutputWidth { get; set; }
         public int OutputHeight { get; set; } = 600;
-        public int OutputWidthAsCanvasRatio => OutputHeight * 7;
+        public int OutputRatio { get; set; } = 7;
+        public int OutputWidthAsCanvasRatio => OutputHeight * OutputRatio;
 
         public OutputImage Barcode_Standard { get; set; }
         public OutputImage Barcode_1px { get; set; }

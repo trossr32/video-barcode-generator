@@ -29,6 +29,7 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
         private VideoCollection _videoCollection;
         private bool _useExistingFrameImagesVisible;
         private bool _previousBarcodesVisible;
+        private bool _videoSettingsVisible;
 
         public SettingsWrapper Settings 
         {
@@ -59,8 +60,6 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             {
                 _videoCollection = value;
 
-                //VisibleIfVideoFileValid = _barcodeConfig.IsValid ? Visibility.Visible : Visibility.Collapsed;
-
                 RaisePropertyChangedEvent("VideoCollection");
             }
         }
@@ -87,10 +86,26 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             }
         }
 
+        public bool VideoSettingsVisible
+        {
+            get => _videoSettingsVisible;
+            set
+            {
+                _videoSettingsVisible = value;
+
+                RaisePropertyChangedEvent("VideoSettingsVisible");
+            }
+        }
+
         public ICommand ImportFileCommand => new DelegateCommand(ImportFile);
         public ICommand PlayVideoCommand => new DelegateCommand(PlayVideo);
         public ICommand SetWidthToDurationCommand => new DelegateCommand(SetWidthToDuration);
-        public ICommand SetWidthToCanvasRatioCommand => new DelegateCommand(SetWidthToCanvasRatio);
+        public ICommand SetWidthToCanvasRatio5Command => new DelegateCommand(() => SetWidthToCanvasRatio(5));
+        public ICommand SetWidthToCanvasRatio6Command => new DelegateCommand(() => SetWidthToCanvasRatio(6));
+        public ICommand SetWidthToCanvasRatio7Command => new DelegateCommand(() => SetWidthToCanvasRatio(7));
+        public ICommand SetWidthToCanvasRatio8Command => new DelegateCommand(() => SetWidthToCanvasRatio(8));
+        public ICommand SetWidthToCanvasRatio9Command => new DelegateCommand(() => SetWidthToCanvasRatio(9));
+        public ICommand SetWidthToCanvasRatio10Command => new DelegateCommand(() => SetWidthToCanvasRatio(10));
         public ICommand CreateBarcodeCommand => new DelegateCommand(CreateBarcode);
         public ICommand ChooseSettingsOutputDirectoryCommand => new DelegateCommand(ChooseSettingsOutputDirectory);
         public ICommand OpenImageDirectoryCommand => new DelegateCommand(OpenImageDirectory);
@@ -132,7 +147,7 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
 
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Multiselect = true,
+                Multiselect = false,
                 Filter = $"Video files ({videoFilePattern})|{videoFilePattern}|All files (*.*)|*.*",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
@@ -141,11 +156,15 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             {
                 if (openFileDialog.FileNames.Length == 1)
                     BuildVideoCollectionAndVideoFile(openFileDialog.FileNames.First());
-                else
-                    ProcessMultipleFiles(openFileDialog.FileNames);
+                //else
+                //    ProcessMultipleFiles(openFileDialog.FileNames);
             }
         }
 
+        /// <summary>
+        /// Not currently used
+        /// </summary>
+        /// <param name="files"></param>
         private void ProcessMultipleFiles(string[] files)
         {
             // display 'defaults will be used for all files'
@@ -172,9 +191,17 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             }
         }
 
+        /// <summary>
+        /// Create a video collection class from the supplied file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         private void BuildVideoCollectionAndVideoFile(string file)
         {
             VideoCollection = CreateVideoCollection(file);
+
+            VideoSettingsVisible = VideoCollection?.Config?.IsValid ?? false;
+            RaisePropertyChangedEvent("VideoSettingsVisible");
 
             BarcodeConfig = new BarcodeConfig(VideoCollection.Config.Duration, VideoCollection.Config.FilenameWithoutExtension);
 
@@ -195,6 +222,11 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             RaisePropertyChangedEvent("BarcodeConfig");
         }
 
+        /// <summary>
+        /// Create a video collection class from the supplied file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         private VideoCollection CreateVideoCollection(string file)
         {
             VideoCollection videoCollection = null;
@@ -215,6 +247,9 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             return videoCollection ?? new VideoCollection(file, Settings.CoreSettings);
         }
 
+        /// <summary>
+        /// Set the width of the image to 1 pixel for every second of the videos duration
+        /// </summary>
         private void SetWidthToDuration()
         {
             BarcodeConfig.OutputWidth = VideoCollection.Config.Duration;
@@ -222,8 +257,13 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             RaisePropertyChangedEvent("BarcodeConfig");
         }
 
-        private void SetWidthToCanvasRatio()
+        /// <summary>
+        /// Set the width of the image as a ratio of the height
+        /// </summary>
+        /// <param name="ratio"></param>
+        private void SetWidthToCanvasRatio(int ratio)
         {
+            BarcodeConfig.OutputRatio = ratio;
             BarcodeConfig.OutputWidth = BarcodeConfig.OutputWidthAsCanvasRatio;
 
             RaisePropertyChangedEvent("BarcodeConfig");
@@ -244,7 +284,14 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
         /// <param name="dropInfo"></param>
         public void DragOver(IDropInfo dropInfo)
         {
-            IEnumerable<string> dragFileList = ((DataObject)dropInfo.Data).GetFileDropList().Cast<string>();
+            List<string> dragFileList = ((DataObject)dropInfo.Data).GetFileDropList().Cast<string>().ToList();
+
+            if (dragFileList.Count() > 1)
+            {
+                dropInfo.Effects = DragDropEffects.None;
+
+                return;
+            }
 
             dropInfo.Effects = dragFileList.Any(item =>
             {
@@ -265,13 +312,16 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
 
             if (dragFileList.Length == 1)
                 BuildVideoCollectionAndVideoFile(dragFileList.First());
-            else
-                ProcessMultipleFiles(dragFileList);
+            //else
+            //    ProcessMultipleFiles(dragFileList);
 
             // reset the dropInfo to remove previously dropped files
             dropInfo = null;
         }
 
+        /// <summary>
+        /// Adds the current video as a creation task
+        /// </summary>
         private void CreateBarcode()
         {
             // Validation!
@@ -290,9 +340,18 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
 
             VideoCollection = null;
             BarcodeConfig = null;
-            UseExistingFrameImagesVisible = false; 
+            UseExistingFrameImagesVisible = false;
+            VideoSettingsVisible = false;
+
+            RaisePropertyChangedEvent("VideoCollection");
+            RaisePropertyChangedEvent("BarcodeConfig");
+            RaisePropertyChangedEvent("VideoSettingsVisible");
+            RaisePropertyChangedEvent("UseExistingFrameImagesVisible"); 
         }
         
+        /// <summary>
+        /// Open a folder browser dialog to select a new video output directory
+        /// </summary>
         private void ChooseSettingsOutputDirectory()
         {
             var commonOpenFileDialog = new CommonOpenFileDialog

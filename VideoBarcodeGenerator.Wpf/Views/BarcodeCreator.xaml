@@ -59,7 +59,7 @@
 
                 <Separator Grid.Row="2" Margin="8,20,8,20" Style="{StaticResource MaterialDesignLightSeparator}"></Separator>
 
-                <Grid Grid.Row="3">
+                <Grid Grid.Row="3" Visibility="{Binding VideoSettingsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -101,9 +101,10 @@
                     </StackPanel>
                 </Grid>
 
-                <Separator Grid.Row="4" Margin="8,20,8,20" Style="{StaticResource MaterialDesignLightSeparator}"></Separator>
+                <Separator Grid.Row="4" Margin="8,20,8,20" Style="{StaticResource MaterialDesignLightSeparator}"
+                           Visibility="{Binding VideoSettingsVisible, Converter={StaticResource BoolToVisibilityConverter}}"></Separator>
 
-                <Grid Grid.Row="5" Margin="10,0,10,0">
+                <Grid Grid.Row="5" Margin="10,0,10,0" Visibility="{Binding VideoSettingsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -127,7 +128,7 @@
                             <Label ToolTip="Use previously created frame images from last run or create new images">Use existing frame images?</Label>
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Visibility="{Binding UseExistingFrameImagesVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
                             <ToggleButton VerticalAlignment="Center" IsChecked="{Binding BarcodeConfig.CreateOnePixelBarcode}" Margin="10,0,10,0" 
                                           Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" 
                                           ToolTip="Choose whether to create the compressed one pixel frame image as well as the standard colour aggregation image" />
@@ -138,21 +139,34 @@
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,5">
                         <TextBox materialDesign:HintAssist.Hint="Height" MinWidth="40" TextAlignment="Right" Text="{Binding BarcodeConfig.OutputHeight}" />
                         <Label VerticalAlignment="Bottom">px</Label>
-                        <Label>Barcode height</Label>
+                        <Label ToolTip="Set the height of the barcode images" Margin="0, 6, 0, 0">Barcode height</Label>
                     </StackPanel>
 
                     <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,5">
                         <TextBox materialDesign:HintAssist.Hint="Width" MinWidth="40" TextAlignment="Right" Text="{Binding BarcodeConfig.OutputWidth}" />
                         <Label VerticalAlignment="Bottom">px</Label>
-                        <Label>Barcode width</Label>
-                        <Button Command="{Binding SetWidthToDurationCommand}"  Content="Set to video duration" Margin="30,0,0,0"></Button>
-                        <Button Command="{Binding SetWidthToCanvasRatioCommand}" Content="Set to canvas ratio (1:7)" Margin="30,0,0,0"></Button>
+                        <Label ToolTip="Set the width of the barcode images" Margin="0, 6, 0, 0">Barcode width</Label>
+                        <Button Command="{Binding SetWidthToDurationCommand}"  Content="Set to video duration" Margin="30,0,0,0"
+                                ToolTip="Set the barcode image width to 1 pixel for every second of the videos length of the barcode images"></Button>
+                        <Button Command="{Binding SetWidthToCanvasRatio5Command}" Content="x5" Margin="10,0,0,0"
+                                ToolTip="Set the barcode image width to a ratio of 5 times the image height"></Button>
+                        <Button Command="{Binding SetWidthToCanvasRatio6Command}" Content="x6" Margin="10,0,0,0"
+                                ToolTip="Set the barcode image width to a ratio of 6 times the image height"></Button>
+                        <Button Command="{Binding SetWidthToCanvasRatio7Command}" Content="x7" Margin="10,0,0,0"
+                                ToolTip="Set the barcode image width to a ratio of 7 times the image height"></Button>
+                        <Button Command="{Binding SetWidthToCanvasRatio8Command}" Content="x8" Margin="10,0,0,0"
+                                ToolTip="Set the barcode image width to a ratio of 8 times the image height"></Button>
+                        <Button Command="{Binding SetWidthToCanvasRatio9Command}" Content="x9" Margin="10,0,0,0"
+                                ToolTip="Set the barcode image width to a ratio of 9 times the image height"></Button>
+                        <Button Command="{Binding SetWidthToCanvasRatio10Command}" Content="x10" Margin="10,0,0,0"
+                                ToolTip="Set the barcode image width to a ratio of 10 times the image height"></Button>
                     </StackPanel>
                 </Grid>
 
-                <Separator Grid.Row="6" Margin="8,20,8,20" Style="{StaticResource MaterialDesignLightSeparator}"></Separator>
+                <Separator Grid.Row="6" Margin="8,20,8,20" Style="{StaticResource MaterialDesignLightSeparator}"
+                           Visibility="{Binding VideoSettingsVisible, Converter={StaticResource BoolToVisibilityConverter}}"></Separator>
 
-                <Grid Grid.Row="7" Margin="10,0,10,0" Width="Auto">
+                <Grid Grid.Row="7" Margin="10,0,10,10" Width="Auto">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -175,7 +189,8 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                     
-                        <TextBox Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Output directory for all videos" MinWidth="200" Text="{Binding Settings.CoreSettings.OutputDirectory}" />
+                        <Label Grid.Row="0" Grid.Column="0" materialDesign:HintAssist.Hint="Output directory for all videos" MinWidth="200" MaxWidth="600"
+                               Content="{Binding Settings.CoreSettings.OutputDirectory}" />
                         <Button Grid.Row="0" Grid.Column="1" Margin="10,0,10,0" Padding="0" Command="{Binding ChooseSettingsOutputDirectoryCommand}" 
                                 ToolTip="Change the default output directory" Height="25" Width="25"> 
                             <materialDesign:PackIcon Width="18" Height="18" Kind="Folder" />
@@ -191,8 +206,9 @@
                         </Label>-->
                     </Grid>
 
-                    <Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" materialDesign:RippleAssist.IsCentered="True" Command="{Binding CreateBarcodeCommand}"
-                            Style="{StaticResource MaterialDesignRaisedAccentButton}" Content="Create Barcode">
+                    <Button Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" materialDesign:RippleAssist.IsCentered="True" Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                            Command="{Binding CreateBarcodeCommand}" Content="Create Barcode"
+                            Visibility="{Binding VideoSettingsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                     </Button>
                 </Grid>
             </Grid>
