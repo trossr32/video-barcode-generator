@@ -4,7 +4,7 @@ namespace VideoBarcodeGenerator.Core.Models.Settings
 {
     public class SettingsWrapper
     {
-        private readonly string DefaultOutputDirectory = @"Q:\Film Barcodes";
+        private readonly string DefaultOutputDirectory = @"C:\Video Barcode Generator";
 
         public SettingsWrapper()
         {
@@ -19,9 +19,7 @@ namespace VideoBarcodeGenerator.Core.Models.Settings
 
     public class CoreSettings
     {
-        public string OutputDirectory { get; set; } = @"Q:\Film Barcodes";
-
-        public string DefaultSource { get; set; } = @"M:\movies";
+        public string OutputDirectory { get; set; } = @"C:\Video Barcode Generator";
 
         public List<string> AcceptedVideoFiles => new List<string> { "avi", "divx", "m4v", "mkv", "m2ts", "mp4", "mpg", "wmv" };
 

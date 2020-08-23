@@ -18,7 +18,7 @@ namespace VideoBarcodeGenerator.Core.Processors
             return new FFProbe().GetMediaInfo(file);
         }
 
-        public static VideoCollection BuildColourListAsync(VideoCollection videoCollection, BarcodeConfig videoFile, SettingsWrapper settings, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
+        public static VideoCollection BuildColourListAsync(VideoCollection videoCollection, SettingsWrapper settings, IProgress<ProgressWrapper> progress, CancellationToken cancellationToken)
         {
             Directory.CreateDirectory(videoCollection.Config.ImageDirectory);
 
@@ -26,18 +26,13 @@ namespace VideoBarcodeGenerator.Core.Processors
             videoCollection.Data.Images = new List<VideoImage>();
             videoCollection.Data.Colours = new List<VideoColour>();
 
-            // get any image files now to save querying the file system for every image
-            List<string> imageFiles = Directory.GetFiles(videoCollection.Config.ImageDirectory).Select(f => f.Split('\\').Last()).ToList();
-
             for (int i = 1; i <= videoCollection.Config.Duration; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var image = $"frame.{i}.jpg";
 
-                var hex = videoFile.UseExistingFrameImages && imageFiles.Any(f => f == image)
-                    ? ImageProcessor.GetAverageHtmlColourFromImageUsingScale(i, videoCollection, settings)
-                    : ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, image, videoCollection, settings);
+                var hex = ImageProcessor.GetAverageHtmlColourFromImageStreamUsingScale(i, image, videoCollection, settings);
 
                 // nreco can fail on the last frame, unsure why at the moment. Maybe duration & frame count mismatch?
                 if (hex != null)

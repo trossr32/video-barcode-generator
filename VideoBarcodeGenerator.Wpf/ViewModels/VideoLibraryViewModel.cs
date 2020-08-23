@@ -16,7 +16,7 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
     {
         private readonly Logger _logger;
         private readonly SettingsWrapper _settings;
-        private readonly List<VideoCollection> _processed;
+        private List<VideoCollection> _processed;
         private ObservableCollection<VideoLibraryItem> _items;
         private bool _taskListVisible;
 
@@ -45,12 +45,15 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             _logger = LogManager.GetCurrentClassLogger();
 
             _settings = settings;
+        }
+
+        public async void Update()
+        {
+            TaskListVisible = false;
 
             _items = new ObservableCollection<VideoLibraryItem>();
 
             _processed = new List<VideoCollection>();
-
-            TaskListVisible = false;
 
             Init()
                 .ContinueWith(t => Application.Current.Dispatcher.Invoke(BuildGrid));
@@ -60,6 +63,9 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
         {
             await Task.Run(() =>
             {
+                if (!Directory.Exists(_settings.CoreSettings.OutputDirectory))
+                    return;
+
                 _processed.AddRange(Directory.GetDirectories(_settings.CoreSettings.OutputDirectory)
                     .Where(d => File.Exists(Path.Combine(d, "videocollection.json")))
                     .Select(d => JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(Path.Combine(d, "videocollection.json")))));
@@ -72,6 +78,8 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
                 .Where(p => p.Config?.IsValid ?? false)
                 .ToList()
                 .ForEach(videoCollection => Items.Add(new VideoLibraryItem(videoCollection)));
+
+            RaisePropertyChangedEvent("Items");
 
             TaskListVisible = true;
         }

@@ -30,7 +30,7 @@ namespace VideoBarcodeGenerator.Core.Models.BarcodeGenerator
                         IsValid = false;
                     else
                     {
-                        OutputDirectory = Path.GetFileNameWithoutExtension(file);
+                        OutputDirectory = $"{Path.GetFileNameWithoutExtension(file)} {DateTime.Now:yyyyMMdd_HHmmss}";
 
                         FullOutputDirectory = Path.Combine(settings.OutputDirectory, OutputDirectory);
 

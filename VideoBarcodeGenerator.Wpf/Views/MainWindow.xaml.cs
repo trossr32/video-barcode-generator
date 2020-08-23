@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using NLog;
 using VideoBarcodeGenerator.Core;
@@ -54,6 +55,8 @@ namespace VideoBarcodeGenerator.Wpf.Views
                     break;
 
                 case TabType.VideoLibrary:
+                    Task.Run(() => Application.Current.Dispatcher.Invoke(() => _videoLibrary.Update())) ;
+
                     ContentArea.Content = _videoLibrary;
                     break;
             }

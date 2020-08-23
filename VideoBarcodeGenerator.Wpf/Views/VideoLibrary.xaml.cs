@@ -9,11 +9,20 @@ namespace VideoBarcodeGenerator.Wpf.Views
     /// </summary>
     public partial class VideoLibrary : UserControl
     {
+        private VideoLibraryViewModel _dataContext;
+
         public VideoLibrary(SettingsWrapper settings)
         {
             InitializeComponent();
 
-            DataContext = new VideoLibraryViewModel(settings);
+            _dataContext = new VideoLibraryViewModel(settings);
+
+            DataContext = _dataContext;
+        }
+
+        public void Update()
+        {
+            _dataContext.Update();
         }
     }
 }
