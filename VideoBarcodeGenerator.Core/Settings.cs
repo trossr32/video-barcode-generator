@@ -9,7 +9,7 @@ namespace VideoBarcodeGenerator.Core
 {
     public static class Settings
     {
-        private static readonly string SettingsDir = Path.Combine(Environment.SpecialFolder.LocalApplicationData.ToString(), "Film Barcodes");
+        private static readonly string SettingsDir = Path.Combine(Environment.SpecialFolder.LocalApplicationData.ToString(), "Video Barcode Generator");
         private static readonly string SettingsFile = Path.Combine(SettingsDir, "settings.json");
         private static readonly string CacheKey = "Settings";
         private static Logger _logger;

@@ -122,12 +122,6 @@
                             <Label ToolTip="Create a zip archive of all created frame images (reduces disk space)">Create zip and delete frame images?</Label>
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Visibility="{Binding UseExistingFrameImagesVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <ToggleButton VerticalAlignment="Center" IsChecked="{Binding BarcodeConfig.UseExistingFrameImages}" Margin="10,0,10,0" 
-                                          Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" ToolTip="Use previously created frame images from last run or create new images" />
-                            <Label ToolTip="Use previously created frame images from last run or create new images">Use existing frame images?</Label>
-                        </StackPanel>
-
                         <StackPanel Orientation="Horizontal">
                             <ToggleButton VerticalAlignment="Center" IsChecked="{Binding BarcodeConfig.CreateOnePixelBarcode}" Margin="10,0,10,0" 
                                           Style="{StaticResource MaterialDesignSwitchAccentToggleButton}" 
@@ -143,7 +137,8 @@
                     </StackPanel>
 
                     <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBox materialDesign:HintAssist.Hint="Width" MinWidth="40" TextAlignment="Right" Text="{Binding BarcodeConfig.OutputWidth}" />
+                        <TextBox materialDesign:HintAssist.Hint="Width" MinWidth="40" TextAlignment="Right" Text="{Binding BarcodeConfig.OutputWidth}"
+                                 />
                         <Label VerticalAlignment="Bottom">px</Label>
                         <Label ToolTip="Set the width of the barcode images" Margin="0, 6, 0, 0">Barcode width</Label>
                         <Button Command="{Binding SetWidthToDurationCommand}"  Content="Set to video duration" Margin="30,0,0,0"
@@ -244,7 +239,7 @@
                     </Grid.RowDefinitions>
 
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Height="310">
-                        <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding VideoCollection.BarcodeConfigs}" Background="{StaticResource MaterialDesignCardBackground}">
+                        <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding PreviousImages}" Background="{StaticResource MaterialDesignCardBackground}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal"/>
@@ -252,7 +247,7 @@
                             </ItemsControl.ItemsPanel>
 
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type barcodeGenerator:BarcodeConfig}">
+                                <DataTemplate DataType="{x:Type barcodeGenerator:OutputImage}">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:Card Width="300" Margin="10,0" materialDesign:ShadowAssist.ShadowDepth="Depth4">
                                             <Grid>
@@ -261,33 +256,14 @@
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="Auto" />
                                                 </Grid.RowDefinitions>
-                                                <Image Width="296" Height="70" Source="{Binding Barcode_Standard.FullOutputFile}" Stretch="UniformToFill" />
+                                                <Image Width="296" Height="70" Source="{Binding FullOutputFile}" Stretch="UniformToFill" />
                                                 <Button Grid.Row="0" Margin="0,0,16,-20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
                                                         Command="{Binding OpenImageDirectoryCommand}">
                                                     <materialDesign:PackIcon Kind="Folder" />
                                                 </Button>
                                                 <StackPanel Grid.Row="1" Margin="10,24,10,10">
-                                                    <TextBlock FontWeight="Bold" Text="{Binding Barcode_Standard.OutputFilename}" />
-                                                    <TextBlock TextWrapping="Wrap" Text="{Binding Barcode_Standard.OutputFilename}" />
-                                                </StackPanel>
-                                            </Grid>
-                                        </materialDesign:Card>
-
-                                        <materialDesign:Card Width="300" Margin="10,0" materialDesign:ShadowAssist.ShadowDepth="Depth4">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="*" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
-                                                <Image Width="296" Height="70" Source="{Binding Barcode_1px.FullOutputFile}" Stretch="UniformToFill" />
-                                                <Button Grid.Row="0" Margin="0,0,16,-20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
-                                                        Command="{Binding  OpenImageDirectoryCommand}">
-                                                    <materialDesign:PackIcon Kind="Folder" />
-                                                </Button>
-                                                <StackPanel Grid.Row="1" Margin="10,24,10,10">
-                                                    <TextBlock FontWeight="Bold" Text="{Binding Barcode_1px.OutputFilename}" />
-                                                    <TextBlock TextWrapping="Wrap" Text="{Binding Barcode_1px.OutputFilename}" />
+                                                    <TextBlock FontWeight="Bold" Text="{Binding OutputFilename}" />
+                                                    <TextBlock TextWrapping="Wrap" Text="{Binding OutputFilename}" />
                                                 </StackPanel>
                                             </Grid>
                                         </materialDesign:Card>

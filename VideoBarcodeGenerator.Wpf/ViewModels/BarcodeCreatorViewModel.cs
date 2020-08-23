@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
         private SettingsWrapper _settings;
         private BarcodeConfig _barcodeConfig;
         private VideoCollection _videoCollection;
-        private bool _useExistingFrameImagesVisible;
+        private List<OutputImage> _previousImages;
         private bool _previousBarcodesVisible;
         private bool _videoSettingsVisible;
 
@@ -64,14 +65,14 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             }
         }
 
-        public bool UseExistingFrameImagesVisible
+        public List<OutputImage> PreviousImages
         {
-            get => _useExistingFrameImagesVisible;
+            get => _previousImages;
             set
             {
-                _useExistingFrameImagesVisible = value;
+                _previousImages = value;
 
-                RaisePropertyChangedEvent("UseExistingFrameImagesVisible");
+                RaisePropertyChangedEvent("PreviousImages");
             }
         }
 
@@ -156,38 +157,6 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             {
                 if (openFileDialog.FileNames.Length == 1)
                     BuildVideoCollectionAndVideoFile(openFileDialog.FileNames.First());
-                //else
-                //    ProcessMultipleFiles(openFileDialog.FileNames);
-            }
-        }
-
-        /// <summary>
-        /// Not currently used
-        /// </summary>
-        /// <param name="files"></param>
-        private void ProcessMultipleFiles(string[] files)
-        {
-            // display 'defaults will be used for all files'
-            // display file list?
-
-            foreach (var file in files)
-            {
-                var videoCollection = CreateVideoCollection(file);
-
-                videoCollection.Config.FullOutputDirectory = Path.Combine(Settings.CoreSettings.OutputDirectory, videoCollection.Config.OutputDirectory);
-
-                var videoFile = new BarcodeConfig(videoCollection.Config.Duration, videoCollection.Config.FilenameWithoutExtension);
-
-                videoFile.SetOutputImagesFullDirectory(videoCollection);
-
-                if (Directory.Exists(videoCollection.Config.ImageDirectory))
-                {
-                    var fileCount = Directory.GetFiles(videoCollection.Config.ImageDirectory).Length;
-
-                    videoFile.UseExistingFrameImages = fileCount >= videoCollection.Config.Duration - 1 && fileCount <= videoCollection.Config.Duration;
-                }
-
-                _tasksViewModel.AddTask(videoFile, videoCollection);
             }
         }
 
@@ -198,53 +167,62 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
         /// <returns></returns>
         private void BuildVideoCollectionAndVideoFile(string file)
         {
-            VideoCollection = CreateVideoCollection(file);
+            // get current and previous runs
+            (VideoCollection current, List<VideoCollection> previous) videoCollectionConfigs = CreateVideoCollection(file);
 
-            VideoSettingsVisible = VideoCollection?.Config?.IsValid ?? false;
+            VideoCollection = videoCollectionConfigs.current;
+
+            VideoSettingsVisible = VideoCollection.Config.IsValid;
             RaisePropertyChangedEvent("VideoSettingsVisible");
 
             BarcodeConfig = new BarcodeConfig(VideoCollection.Config.Duration, VideoCollection.Config.FilenameWithoutExtension);
 
-            PreviousBarcodesVisible = VideoCollection.BarcodeConfigs.Any();
+            PreviousBarcodesVisible = videoCollectionConfigs.previous.Any();
 
-            if (Directory.Exists(VideoCollection.Config.ImageDirectory))
+            var previousImages = new List<OutputImage>();
+
+            if (PreviousBarcodesVisible)
             {
-                var fileCount = Directory.GetFiles(VideoCollection.Config.ImageDirectory).Length;
+                videoCollectionConfigs.previous
+                    .Select(v => v.BarcodeConfigs)
+                    .ToList()
+                    .ForEach(b =>
+                    {
+                        if (File.Exists(b.FirstOrDefault()?.Barcode_Standard.FullOutputFile))
+                            previousImages.Add(b.First().Barcode_Standard);
 
-                // frame image count tends to be 1 less than duration seconds (rounding or for index error?)
-                UseExistingFrameImagesVisible = fileCount >= VideoCollection.Config.Duration - 1 && fileCount <= VideoCollection.Config.Duration;
-
-                BarcodeConfig.UseExistingFrameImages = true;
+                        if (File.Exists(b.FirstOrDefault()?.Barcode_1px.FullOutputFile))
+                            previousImages.Add(b.First().Barcode_1px);
+                    });
             }
-            else
-                UseExistingFrameImagesVisible = false;
 
-            RaisePropertyChangedEvent("BarcodeConfig");
+            PreviousImages = previousImages;
         }
 
         /// <summary>
-        /// Create a video collection class from the supplied file
+        /// Create a video collection class from the supplied file and finds any previous runs
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        private VideoCollection CreateVideoCollection(string file)
+        private (VideoCollection current, List<VideoCollection> previous) CreateVideoCollection(string file)
         {
-            VideoCollection videoCollection = null;
-            var videoCollectionFile = Path.Combine(Settings.CoreSettings.OutputDirectory, Path.GetFileNameWithoutExtension(file), "videocollection.json");
+            // build the new video collection config
+            var current = new VideoCollection(file, Settings.CoreSettings);
 
-            if (!File.Exists(videoCollectionFile))
-                return new VideoCollection(file, Settings.CoreSettings);
+            // search for any previous run directories
+            string[] previousDirs = Directory.GetDirectories(Settings.CoreSettings.OutputDirectory, $"{Path.GetFileNameWithoutExtension(file)}*", SearchOption.TopDirectoryOnly);
 
-            try
-            {
-                videoCollection = JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(videoCollectionFile));
-            }
-            catch (Exception)
-            {
-                // on failure we want to continue as the video collection file format may have changed
-            }
+            // if no previous runs found return current
+            if (!previousDirs.Any())
+                return (current, new List<VideoCollection>());
 
-            return videoCollection ?? new VideoCollection(file, Settings.CoreSettings);
+            // previous runs found so get any video collection configs
+            List<VideoCollection> previous = previousDirs
+                .Where(d => File.Exists(Path.Combine(d, "videocollection.json")))
+                .Select(d => JsonConvert.DeserializeObject<VideoCollection>(File.ReadAllText(Path.Combine(d, "videocollection.json"))))
+                .ToList();
+
+            return (current, previous);
         }
 
         /// <summary>
@@ -324,29 +302,32 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
         /// </summary>
         private void CreateBarcode()
         {
-            // Validation!
-
             // check if the settings directory has changed (been manually typed)
             var tempSettings = Core.Settings.GetSettings();
 
             if (tempSettings.CoreSettings.OutputDirectory != Settings.CoreSettings.OutputDirectory)
                 Core.Settings.SetSettings(Settings);
 
+            // 
+
+
+
             VideoCollection.Config.FullOutputDirectory = Path.Combine(Settings.CoreSettings.OutputDirectory, VideoCollection.Config.OutputDirectory);
 
             BarcodeConfig.SetOutputImagesFullDirectory(VideoCollection);
 
+            // submit the task
             _tasksViewModel.AddTask(BarcodeConfig, VideoCollection);
 
+            // initialise all the config
             VideoCollection = null;
             BarcodeConfig = null;
-            UseExistingFrameImagesVisible = false;
             VideoSettingsVisible = false;
+            PreviousBarcodesVisible = false;
 
             RaisePropertyChangedEvent("VideoCollection");
             RaisePropertyChangedEvent("BarcodeConfig");
             RaisePropertyChangedEvent("VideoSettingsVisible");
-            RaisePropertyChangedEvent("UseExistingFrameImagesVisible"); 
         }
         
         /// <summary>

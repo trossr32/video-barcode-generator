@@ -58,7 +58,6 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             get => _videoCollection;
             set
             {
-                //if (_barcodeConfig == value) return;
                 _videoCollection = value;
 
                 RaisePropertyChangedEvent("VideoCollection");
@@ -70,7 +69,6 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             get => _barcodeConfig;
             set
             {
-                //if (_barcodeConfig == value) return;
                 _barcodeConfig = value;
                 
                 RaisePropertyChangedEvent("BarcodeConfig");
@@ -82,7 +80,6 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             get => _elapsed;
             set
             {
-                //if (_isSelected == value) return;
                 _elapsed = value;
                 
                 RaisePropertyChangedEvent("Elapsed");
@@ -94,7 +91,6 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
             get => _progress;
             set
             {
-                //if (_isSelected == value) return;
                 _progress = value;
                 
                 RaisePropertyChangedEvent("Progress");
@@ -179,7 +175,7 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
 
                     try
                     {
-                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, BarcodeConfig, _settings, progress, _cancellationTokenSource.Token);
+                        videoCollection = VideoProcessor.BuildColourListAsync(VideoCollection, _settings, progress, _cancellationTokenSource.Token);
                     }
                     catch (OperationCanceledException)
                     {
