@@ -73,7 +73,7 @@ namespace VideoBarcodeGenerator.Wpf.ViewModels
                 .ToList()
                 .ForEach(videoCollection => Items.Add(new VideoLibraryItem(videoCollection)));
 
-            //TaskListVisible = true;
+            TaskListVisible = true;
         }
     }
 }
