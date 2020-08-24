@@ -7,11 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoBarcodeGenerator.Core"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoBarcodeGenerator.Wpf", "VideoBarcodeGenerator.Wpf\VideoBarcodeGenerator.Wpf.csproj", "{BCA5B3C2-190B-49E0-9867-70FB20F93FA5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Batch files", "Batch files", "{FF87BA84-AA3D-45FE-BC82-F5A5E9F36A3C}"
-	ProjectSection(SolutionItems) = preProject
-		Batch files\BarcodeManager.bat = Batch files\BarcodeManager.bat
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
