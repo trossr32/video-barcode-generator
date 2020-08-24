@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
 using VideoBarcodeGenerator.Core.Models.Settings;
 using VideoBarcodeGenerator.Wpf.ViewModels;
 
@@ -23,6 +25,13 @@ namespace VideoBarcodeGenerator.Wpf.Views
         public void Update()
         {
             _dataContext.Update();
+        }
+
+        private void GoToPath(object sender, RoutedEventArgs e)
+        {
+            object path = ((Button)sender).Tag;
+
+            Process.Start(path.ToString());
         }
     }
 }
