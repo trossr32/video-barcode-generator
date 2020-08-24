@@ -17,7 +17,7 @@
 
 # Getting Started
 
-Download the latest release from the [release page](https://github.com/trossr32/video-barcode-generator/releases), unzip the archive and double-click the VideoBarcodeGenerator.Wpf.exe executable. No installer is provided.
+Download the latest release from the [release page](https://github.com/trossr32/video-barcode-generator/releases), unzip the archive and double-click the *VideoBarcodeGenerator.Wpf.exe* executable. No installer is provided.
 
 Alternatively clone the repository and open the solution in Visual Studio 2019. .NET Framework version 4.8 is required.
 
@@ -29,7 +29,7 @@ By default the created image will be 600 pixels in height and the width will be 
 
 A standard single colour barcode image will always be created, but you can choose whether to also create the 1 pixel compressed barcode.
 
-You can set the output directory root and each video file run will be saved to its own directory within this root with a name of {video name}_yyyyMMdd_HHmmss. In this directory the following will be created:
+You can set the output directory root and each video file run will be saved to its own directory within this root with a name of *{video name}_yyyyMMdd_HHmmss*. In this directory the following will be created:
 
 * The barcode images
 * A videocollection.json configuration file containing the settings used for this run, including a collection that points to all created frame images and all colour codes used to generate the standard barcode.
