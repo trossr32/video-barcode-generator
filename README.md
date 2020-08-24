@@ -7,13 +7,17 @@
 
  Frames are taken from the video file and converted to images. These images are then scaled to 70% to focus on the core of the frame, shrunk to a pixel and this aggregated colour then used to create a 1 pixel width line which is then added to the barcode image. Here's an example created from the 2009 film Avatar:
 
+ [![Avatar (2009) single colour](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Avatar%20(2009).jpg)](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Full/Avatar%20(2009).jpg)
+
  ## 1 pixel compressed
 
  This follows the same basic process as creating a single colour barcode, but frame images are compressed to a pixel width and added to the barcode image rather than calculating an aggrgated frame colour. Using Avatar as an example again:
 
+ [![Avatar (2009) 1px](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Avatar%20(2009)_1px.jpg)](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Full/Avatar%20(2009)_1px.jpg)
+
 # Getting Started
 
-Download the latest release from the release page, unzip the archive and double-click the executable. No installer is provided.
+Download the latest release from the [release page](https://github.com/trossr32/video-barcode-generator/releases), unzip the archive and double-click the VideoBarcodeGenerator.Wpf.exe executable. No installer is provided.
 
 Alternatively clone the repository and open the solution in Visual Studio 2019. .NET Framework version 4.8 is required.
 
