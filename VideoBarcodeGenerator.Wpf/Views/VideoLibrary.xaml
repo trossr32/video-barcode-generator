@@ -43,45 +43,67 @@
                   CanUserAddRows="False" CanUserSortColumns="True" ItemsSource="{Binding Items}"
                   Visibility="{Binding TaskListVisible, Converter={StaticResource BoolToVisibilityConverter}}">
             <DataGrid.Columns>
-                <DataGridCheckBoxColumn Binding="{Binding IsSelected}" EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}" 
+                <!--<DataGridCheckBoxColumn Binding="{Binding IsSelected}" EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}" 
                                         ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}">
-                    <!--<DataGridCheckBoxColumn.Header>
-                        --><!--  padding to allow hit test to pass thru for sorting  --><!--
-                        <Border Padding="6,0,6,0" HorizontalAlignment="Center" Background="Transparent"> 
-                            <CheckBox HorizontalAlignment="Center" DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext}" 
-                                        IsChecked="{Binding IsAllItemsSelected}" />
-                        </Border>
-                    </DataGridCheckBoxColumn.Header>-->
-                </DataGridCheckBoxColumn>
-                <!--<DataGridTextColumn Binding="{Binding Code}" EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" Header="Code" />-->
+                </DataGridCheckBoxColumn>-->
+                
                 <!--  if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn  -->
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding Processed.Config.FileName}" EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" Header="Name" />
+                <materialDesign:MaterialDataGridTextColumn Binding="{Binding Processed.Config.FileName}" 
+                                                           EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" Header="Name" />
+                
                 <!--  set a max length to get an indicator in the editor  -->
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding Processed.Config.DurationTimeSpan, Converter={StaticResource TimeSpanToStringConverter}}" EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" Header="Duration" />
+                <materialDesign:MaterialDataGridTextColumn Binding="{Binding Processed.Config.DurationTimeSpan, Converter={StaticResource TimeSpanToStringConverter}}" 
+                                                           EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" Header="Duration" />
 
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding StandardBarcodeCreated, Converter={StaticResource BoolToYesNoConverter}}" Header="Standard barcode" />
+                <DataGridTemplateColumn Header="Standard barcode">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <StackPanel>
+                                    <materialDesign:PackIcon Kind="Check" Foreground="LimeGreen" 
+                                                             Visibility="{Binding StandardBarcodeCreated, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <materialDesign:PackIcon Kind="Close" Foreground="Red" 
+                                                             Visibility="{Binding StandardBarcodeCreated, Converter={StaticResource ReverseBoolToVisibilityConverter}}"/>
+                                </StackPanel>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding OnePixelBarcodeCreated, Converter={StaticResource BoolToYesNoConverter}}" Header="1 pixel barcode" />
+                <DataGridTemplateColumn Header="1 pixel barcode">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <StackPanel>
+                                    <materialDesign:PackIcon Kind="Check" Foreground="LimeGreen" 
+                                                             Visibility="{Binding OnePixelBarcodeCreated, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <materialDesign:PackIcon Kind="Close" Foreground="Red" 
+                                                             Visibility="{Binding OnePixelBarcodeCreated, Converter={StaticResource ReverseBoolToVisibilityConverter}}"/>
+                                </StackPanel>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding ProcessedStandardFrameCountInFileSystemMatchesDuration, Converter={StaticResource BoolToYesNoConverter}}" Header="fs std frames ok" />
-                <materialDesign:MaterialDataGridTextColumn Binding="{Binding ProcessedOnePixelFrameCountInFileSystemMatchesDuration, Converter={StaticResource BoolToYesNoConverter}}" Header="fs 1px frames ok" />
+                <DataGridTemplateColumn Header="Path">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <StackPanel Orientation="Horizontal"
+                                    Visibility="{Binding StandardBarcodeCreated, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Label Content="{Binding ImagePath}"></Label>
+                                    <Button Style="{StaticResource MaterialDesignRaisedAccentButton}" Height="25" Width="25" Padding="0, 0, 2, 0"
+                                            Margin="10,0,0,0" Tag="{Binding ImagePath}" Click="GoToPath">
+                                        <materialDesign:PackIcon Kind="Launch" Foreground="{StaticResource MaterialDesignDarkForeground}" />
+                                    </Button>
+                                </StackPanel>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
-                <!--<materialDesign:MaterialDataGridTextColumn Binding="{Binding Numeric}" EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" Header="Numeric">
-                    <DataGridTextColumn.HeaderStyle>
-                        <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="HorizontalAlignment" Value="Right" />
-                        </Style>
-                    </DataGridTextColumn.HeaderStyle>
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="HorizontalAlignment" Value="Right" />
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </materialDesign:MaterialDataGridTextColumn>-->
-                <!--  use custom combo box column to get better combos. Use ItemsSourceBinding as your binding template to be applied to each combo  -->
-                <!--<materialDesign:MaterialDataGridComboBoxColumn Header="Food" 
-                                                               ItemsSourceBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.Foods}" 
-                                                               SelectedValueBinding="{Binding Food}" />-->
+                <materialDesign:MaterialDataGridTextColumn Binding="{Binding RunDate}" 
+                                                           EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" Header="Run date" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
