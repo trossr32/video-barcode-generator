@@ -11,7 +11,7 @@
 
  ## 1 pixel compressed
 
- This follows the same basic process as creating a single colour barcode, but frame images are compressed to a pixel width and added to the barcode image rather than calculating an aggrgated frame colour. Using Avatar as an example again:
+ This follows the same basic process as creating a single colour barcode, but frame images are compressed to a pixel width and added to the barcode image rather than calculating an aggregated frame colour. Using Avatar as an example again:
 
  [![Avatar (2009) 1px](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Avatar%20(2009)_1px.jpg)](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Full/Avatar%20(2009)_1px.jpg)
 
