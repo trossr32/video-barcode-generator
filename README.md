@@ -111,4 +111,4 @@ Here are some example barcodes created using this app:
 [![Shrek (2001) 1px](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Shrek%20(2001)_1px.jpg)](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Full/Shrek%20(2001)_1px.jpg)
 
 # Contribute
-If you can make this extension better I'm happy for the help! Create a pull request and get in touch. Alternatively feel free to raise an issue if you've found a bug.
+If you can make this application better I'm happy for the help! Create a pull request and get in touch. Alternatively feel free to raise an issue if you've found a bug.
