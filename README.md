@@ -110,5 +110,8 @@ Here are some example barcodes created using this app:
 
 [![Shrek (2001) 1px](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Shrek%20(2001)_1px.jpg)](https://github.com/trossr32/video-barcode-generator/blob/master/Example%20Barcodes/Full/Shrek%20(2001)_1px.jpg)
 
-# Contribute
-If you can make this application better I'm happy for the help! Create a pull request and get in touch. Alternatively feel free to raise an issue if you've found a bug.
+## Contribute
+
+Please raise an issue if you find a bug or want to request a new feature, or create a pull request to contribute.
+
+<a href='https://ko-fi.com/K3K22CEIT' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi4.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
